@@ -231,7 +231,7 @@ int pojavInitOpenGL() {
         }
     } else if (strcmp(renderer, "mesa_3d") == 0) {
         if(strcmp(ldrivermodle, "driver_zink") == 0) {
-            setenv("GALLIUM_DRIVER","zink",1);
+            setenv("GALLIUM_DRIVER","v3d",1);
             printf("Bridge: Use Zink Renderer\n");
             renderer_load_config();
             if(getenv("POJAV_LEGACY_ZINK_ALLOW") == NULL)
