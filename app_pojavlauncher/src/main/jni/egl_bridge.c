@@ -215,8 +215,7 @@ int pojavInitOpenGL() {
 
         if (!strcmp(ldrivermodel, "driver_softpipe"))
         {
-            setenv("GALLIUM_DRIVER", "softpipe", 1);
-            setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
+            setenv("GALLIUM_DRIVER", "svga", 1);
             renderer_load_config();
         }
 
