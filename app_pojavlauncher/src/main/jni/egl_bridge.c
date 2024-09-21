@@ -181,7 +181,7 @@ int pojavInitOpenGL() {
 
         if (!strcmp(ldrivermodel, "driver_zink"))
         {
-            setenv("GALLIUM_DRIVER", "zink", 1);
+            setenv("GALLIUM_DRIVER", "svga", 1);
             renderer_load_config();
             load_vulkan();
         }
