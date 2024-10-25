@@ -165,6 +165,7 @@ public class CustomDialog {
                 default:
                     return false;
             }
+            decorView.invalidate();
             return true;
         });
     }
