@@ -5,7 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -151,21 +151,23 @@ public class CustomDialog {
     }
 
     private void setDraggable(AlertDialog dialog) {
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         View decorView = dialog.getWindow().getDecorView();
+
         decorView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    dX = decorView.getX() - event.getRawX();
-                    dY = decorView.getY() - event.getRawY();
+                    dX = params.x - event.getRawX();
+                    dY = params.y - event.getRawY();
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    decorView.setX(event.getRawX() + dX);
-                    decorView.setY(event.getRawY() + dY);
+                    params.x = (int) (event.getRawX() + dX);
+                    params.y = (int) (event.getRawY() + dY);
+                    dialog.getWindow().setAttributes(params);
                     break;
                 default:
                     return false;
             }
-            decorView.invalidate();
             return true;
         });
     }
