@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -77,7 +78,8 @@ public class CustomDialog {
 
         builder.setView(view);
         dialog = builder.create();
-        setDraggable(view);
+
+        dialog.setOnShowListener(dialogInterface -> setDraggable(dialog));
 
         if (!cancelable) dialog.setCancelable(false);
 
@@ -148,16 +150,17 @@ public class CustomDialog {
 
     }
 
-    private void setDraggable(View view) {
-        view.setOnTouchListener((v, event) -> {
+    private void setDraggable(AlertDialog dialog) {
+        View decorView = dialog.getWindow().getDecorView();
+        decorView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    dX = v.getX() - event.getRawX();
-                    dY = v.getY() - event.getRawY();
+                    dX = decorView.getX() - event.getRawX();
+                    dY = decorView.getY() - event.getRawY();
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    v.setX(event.getRawX() + dX);
-                    v.setY(event.getRawY() + dY);
+                    decorView.setX(event.getRawX() + dX);
+                    decorView.setY(event.getRawY() + dY);
                     break;
                 default:
                     return false;
