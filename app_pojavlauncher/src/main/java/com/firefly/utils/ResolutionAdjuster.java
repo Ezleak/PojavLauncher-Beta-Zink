@@ -95,7 +95,7 @@ public class ResolutionAdjuster {
         // 创建并显示弹窗
         new CustomDialog.Builder(context)
                 .setTitle(context.getString(R.string.mcl_setting_title_resolution_scaler))
-                .setView(layout)
+                .setCustomView(layout)
                 .setCancelable(false)
                 .setDraggable(true)
                 .setConfirmListener(android.R.string.ok, customView -> true)
