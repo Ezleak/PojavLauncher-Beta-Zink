@@ -1,9 +1,7 @@
 package com.firefly.utils;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.ViewGroup;
