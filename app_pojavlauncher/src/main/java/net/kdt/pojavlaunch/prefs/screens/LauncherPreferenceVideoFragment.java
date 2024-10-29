@@ -2,6 +2,17 @@ package net.kdt.pojavlaunch.prefs.screens;
 
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_NOTCH_SIZE;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.SwitchPreference;
+import androidx.preference.SwitchPreferenceCompat;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
+
+import com.firefly.utils.PGWTools;
+import com.firefly.ui.dialog.CustomDialog;
+import com.firefly.ui.prefs.ChooseMesaListPref;
+
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,14 +23,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.SwitchPreference;
-import androidx.preference.SwitchPreferenceCompat;
-
-import com.firefly.ui.dialog.CustomDialog;
-import com.firefly.ui.prefs.ChooseMesaListPref;
 
 import net.kdt.pojavlaunch.PojavApplication;
 import net.kdt.pojavlaunch.R;
@@ -83,6 +86,22 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         rendererListPreference.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.LOCAL_RENDERER = (String) obj;
             return true;
+        });
+
+        Preference driverPreference = requirePreference("zinkPreferSystemDriver");
+        if (!Tools.checkVulkanSupport(driverPreference.getContext().getPackageManager())) {
+            driverPreference.setVisible(false);
+        }
+        SwitchPreference useSystemVulkan = requirePreference("zinkPreferSystemDriver", SwitchPreference.class);
+        useSystemVulkan.setOnPreferenceChangeListener((p, v) -> {
+            boolean set = (boolean) v;
+            boolean isAdreno = PGWTools.isAdrenoGPU();
+            if (set && isAdreno) {
+                onCheckGPUDialog(p);
+            } else {
+                return true;
+            }
+            return false;
         });
 
         final Preference downloadMesa = requirePreference("DownloadMesa", Preference.class);
@@ -257,6 +276,22 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 ((SwitchPreference) closepref).setChecked(false);
             }
         }
+    }
+
+    
+    private void onCheckGPUDialog(Preference pre) {
+        new CustomDialog.Builder(getContext())
+                .setTitle("No No No No No!")
+                .setMessage(getString(R.string.worning_system_vulkan_adreno))
+                .setConfirmListener(R.string.preference_rendererexp_alertdialog_done, customView -> {
+                    ((SwitchPreference) pre).setChecked(true);
+                    return true;
+                })
+                .setCancelListener(R.string.alertdialog_cancel, customView -> true)
+                .setCancelable(false)
+                .setDraggable(true)
+                .build()
+                .show();
     }
 
     private void onExpRendererDialog(Preference pre) {
