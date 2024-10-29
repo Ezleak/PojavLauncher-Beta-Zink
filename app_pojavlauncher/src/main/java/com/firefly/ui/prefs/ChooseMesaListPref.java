@@ -1,4 +1,4 @@
-package net.kdt.pojavlaunch.prefs;
+package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;

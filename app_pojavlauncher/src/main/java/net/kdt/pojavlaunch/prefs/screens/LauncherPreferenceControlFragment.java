@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceCategory;
 
 import net.kdt.pojavlaunch.R;
@@ -25,9 +27,36 @@ import java.io.InputStream;
 
 public class LauncherPreferenceControlFragment extends LauncherPreferenceFragment {
     private boolean mGyroAvailable = false;
+    private ActivityResultLauncher<Intent> mouseSettingLauncher;
 
     @Override
     public void onCreatePreferences(Bundle b, String str) {
+        // Initialize the ActivityResultLauncher for picking an image
+        mouseSettingLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri currentUri = result.getData().getData();
+                    try {
+                        File file = new File(Tools.DIR_GAME_HOME, "mouse");
+                        if (file.exists()) {
+                            file.delete();
+                        }
+
+                        InputStream stream1 = getContext().getContentResolver().openInputStream(currentUri);
+                        FileOutputStream stream = new FileOutputStream(file);
+
+                        IOUtils.copy(stream1, stream);
+                        stream.close();
+                        stream1.close();
+                        Toast.makeText(getContext(), R.string.notif_mouse, Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        );
+
         // Get values
         int longPressTrigger = LauncherPreferences.PREF_LONGPRESS_TRIGGER;
         int prefButtonSize = (int) LauncherPreferences.PREF_BUTTONSIZE;
@@ -37,8 +66,7 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         float gyroSpeed = LauncherPreferences.PREF_GYRO_SENSITIVITY;
         float joystickDeadzone = LauncherPreferences.PREF_DEADZONE_SCALE;
 
-
-        //Triggers a write for some reason which resets the value
+        // Triggers a write for some reason which resets the value
         addPreferencesFromResource(R.xml.pref_control);
 
         CustomSeekBarPreference seek2 = requirePreference("timeLongPressTrigger",
@@ -93,14 +121,14 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         gyroSampleRateSeek.setSuffix(" ms");
 
         // Custom Mouse
-        findPreference("control_mouse_setting").setOnPreferenceClickListener((preference) -> {
+        findPreference("control_mouse_setting").setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
-            startActivityForResult(intent, 1);
+            mouseSettingLauncher.launch(intent);
             return true;
         });
 
-        findPreference("control_mouse_remove").setOnPreferenceClickListener((preference) -> {
+        findPreference("control_mouse_remove").setOnPreferenceClickListener(preference -> {
             File file = new File(Tools.DIR_GAME_HOME, "mouse");
             if (file.exists()) {
                 file.delete();
@@ -126,34 +154,4 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         requirePreference("gyroInvertY").setVisible(LauncherPreferences.PREF_ENABLE_GYRO);
         requirePreference("gyroSmoothing").setVisible(LauncherPreferences.PREF_ENABLE_GYRO);
     }
-
-    @Override
-    private void onActivityResult(
-        int requestCode, int resultCode, final Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            // Handle error
-            return;
-        }
-
-        if (requestCode == 1) {// Get photo picker response for single select.
-            Uri currentUri = data.getData();
-            try {
-                File file = new File(Tools.DIR_GAME_HOME, "mouse");
-                if (file.exists()) {
-                    file.delete();
-                }
-
-                InputStream stream1 = getContext().getContentResolver().openInputStream(currentUri);
-                FileOutputStream stream = new FileOutputStream(file);
-
-                IOUtils.copy(stream1, stream);
-                stream.close();
-                stream1.close();
-                Toast.makeText(getContext(), R.string.notif_mouse, Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 }
