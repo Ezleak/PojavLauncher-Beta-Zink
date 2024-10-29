@@ -1,16 +1,27 @@
 package net.kdt.pojavlaunch.prefs.screens;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceCategory;
 
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.prefs.CustomSeekBarPreference;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
+import net.kdt.pojavlaunch.Tools;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class LauncherPreferenceControlFragment extends LauncherPreferenceFragment {
     private boolean mGyroAvailable = false;
@@ -80,6 +91,24 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         gyroSampleRateSeek.setRange(5, 50);
         gyroSampleRateSeek.setValue(gyroSampleRate);
         gyroSampleRateSeek.setSuffix(" ms");
+
+        // Custom Mouse
+        findPreference("control_mouse_setting").setOnPreferenceClickListener((preference) -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            startActivityForResult(intent, 1);
+            return true;
+        });
+
+        findPreference("control_mouse_remove").setOnPreferenceClickListener((preference) -> {
+            File file = new File(Tools.DIR_GAME_HOME, "mouse");
+            if (file.exists()) {
+                file.delete();
+            }
+            Toast.makeText(getContext(), R.string.notif_mouse1, Toast.LENGTH_SHORT).show();
+            return true;
+        });
+
         computeVisibility();
     }
 
@@ -96,6 +125,35 @@ public class LauncherPreferenceControlFragment extends LauncherPreferenceFragmen
         requirePreference("gyroInvertX").setVisible(LauncherPreferences.PREF_ENABLE_GYRO);
         requirePreference("gyroInvertY").setVisible(LauncherPreferences.PREF_ENABLE_GYRO);
         requirePreference("gyroSmoothing").setVisible(LauncherPreferences.PREF_ENABLE_GYRO);
+    }
+
+    @Override
+    private void onActivityResult(
+        int requestCode, int resultCode, final Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            // Handle error
+            return;
+        }
+
+        if (requestCode == 1) {// Get photo picker response for single select.
+            Uri currentUri = data.getData();
+            try {
+                File file = new File(Tools.DIR_GAME_HOME, "mouse");
+                if (file.exists()) {
+                    file.delete();
+                }
+
+                InputStream stream1 = getContext().getContentResolver().openInputStream(currentUri);
+                FileOutputStream stream = new FileOutputStream(file);
+
+                IOUtils.copy(stream1, stream);
+                stream.close();
+                stream1.close();
+                Toast.makeText(getContext(), R.string.notif_mouse, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
