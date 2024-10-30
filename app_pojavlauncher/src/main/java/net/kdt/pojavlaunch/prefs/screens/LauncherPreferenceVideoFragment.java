@@ -186,7 +186,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
         Preference chooseTurnipDriverPref = requirePreference("chooseTurnipDriver", Preference.class);
         chooseTurnipDriverPref.setOnPreferenceClickListener(preference -> {
-            onChooseTurnipDriverClick();
+            selectTurnipDriverFile();
             return true;
         });
 
@@ -461,25 +461,53 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
     }
 
-    public void onChooseTurnipDriverClick() {
+    private void selectTurnipDriverFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/octet-stream");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "选择 .so 文件"), FILE_SELECT_CODE);
+        startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_SELECT_CODE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                Uri uri = data.getData();
-                if (uri != null) {
-                    TurnipUtils turnipUtils = new TurnipUtils(requireContext());
-                    turnipUtils.handleTurnipFile(uri);
-                }
+        if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
+            Uri fileUri = data.getData();
+            if (fileUri != null) {
+                showFolderNameDialog(fileUri);
             }
         }
+    }
+
+    private void showFolderNameDialog(Uri fileUri) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Enter Folder Name");
+
+        // EditText for folder name input
+        EditText input = new EditText(getActivity());
+        input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
+            // Restrict input to alphanumeric characters, digits, and periods
+            for (int i = start; i < end; i++) {
+                char c = source.charAt(i);
+                if (!Character.isLetterOrDigit(c) && c != '.') {
+                    return "";
+                }
+            }
+            return null;
+        }});
+        builder.setView(input);
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            String folderName = input.getText().toString().trim();
+            if (!folderName.isEmpty()) {
+                TurnipUtils turnipUtils = new TurnipUtils(getActivity());
+                boolean success = turnipUtils.saveTurnipDriver(fileUri, folderName);
+                Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
 }

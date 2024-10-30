@@ -2,62 +2,56 @@ package com.firefly.utils;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+import android.os.Environment;
 import android.widget.Toast;
-
-import androidx.documentfile.provider.DocumentFile;
-
-import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class TurnipUtils {
 
-    private Context context;
-    private File turnipDir;
+    private final File turnipDir;
 
     public TurnipUtils(Context context) {
-        this.context = context;
-        this.turnipDir = new File(Tools.TURNIP_DIR);
+        // Define TURNIP_DIR in external storage
+        turnipDir = new File(Tools.TURNIP_DIR);
         if (!turnipDir.exists() && !turnipDir.mkdirs()) {
-            // Toast.makeText(context, R.string.turnip_dir_creation_failed, Toast.LENGTH_SHORT).show();
+            throw new RuntimeException("Failed to create Turnip directory");
         }
     }
 
-    public void handleTurnipFile(Uri uri) {
-        if (!isValidSoFile(uri)) {
-            // Toast.makeText(context, R.string.invalid_so_file, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        File destinationFile = new File(turnipDir, "turnip.so");
-
-        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
-             FileOutputStream outputStream = new FileOutputStream(destinationFile)) {
-
-            if (inputStream == null) {
-                // Toast.makeText(context, R.string.file_read_error, Toast.LENGTH_SHORT).show();
-                return;
+    /**
+     * 将选择的驱动文件重命名为 turnip.so 并保存到指定文件夹中
+     *
+     * @param fileUri    选择的驱动文件 URI
+     * @param folderName 用户输入的文件夹名称
+     * @return 操作是否成功
+     */
+    public boolean saveTurnipDriver(Uri fileUri, String folderName) {
+        try {
+            File targetDir = new File(turnipDir, folderName);
+            if (!targetDir.exists() && !targetDir.mkdirs()) {
+                return false;
             }
 
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
+            File targetFile = new File(targetDir, "turnip.so");
 
-            // Toast.makeText(context, R.string.file_move_success, Toast.LENGTH_SHORT).show();
+            try (InputStream inputStream = context.getContentResolver().openInputStream(fileUri);
+                 OutputStream outputStream = new FileOutputStream(targetFile)) {
+                if (inputStream == null) return false;
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            return true;
         } catch (Exception e) {
-            Log.e("TurnipUtils", "Error handling turnip file", e);
-            // Toast.makeText(context, R.string.file_move_error, Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            return false;
         }
-    }
-
-    public boolean isValidSoFile(Uri uri) {
-        DocumentFile documentFile = DocumentFile.fromSingleUri(context, uri);
-        return documentFile != null && documentFile.getName() != null && documentFile.getName().endsWith(".so");
     }
 }
