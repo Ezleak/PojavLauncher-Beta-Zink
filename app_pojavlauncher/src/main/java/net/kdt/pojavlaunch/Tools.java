@@ -109,6 +109,7 @@ public final class Tools {
     public static String NATIVE_LIB_DIR;
     public static String DIR_DATA; //Initialized later to get context
     public static String MESA_DIR;
+    public static String TURNIP_DIR;
     public static File DIR_CACHE;
     public static File FILE_PROFILE_PATH;
     public static String MULTIRT_HOME;
@@ -165,6 +166,7 @@ public final class Tools {
         DIR_CACHE = ctx.getCacheDir();
         DIR_DATA = ctx.getFilesDir().getParent();
         MESA_DIR = DIR_DATA + "/mesa";
+        TURNIP_DIR = DIR_DATA + "/turnip";
         FILE_PROFILE_PATH = new File(Tools.DIR_DATA, "/profile_path.json");
         MULTIRT_HOME = DIR_DATA + "/runtimes";
         DIR_GAME_HOME = getPojavStorageRoot(ctx).getAbsolutePath();

@@ -2,27 +2,31 @@ package net.kdt.pojavlaunch.prefs.screens;
 
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_NOTCH_SIZE;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
-import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 
 import com.firefly.utils.PGWTools;
+import com.firefly.utils.TurnipUtils;
 import com.firefly.ui.dialog.CustomDialog;
 import com.firefly.ui.prefs.ChooseMesaListPref;
 
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 
 import net.kdt.pojavlaunch.PojavApplication;
 import net.kdt.pojavlaunch.R;
@@ -38,6 +42,7 @@ import java.util.Set;
  */
 public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment {
 
+    private static final int FILE_SELECT_CODE = 100;
     private EditText mSetVideoResolution;
     private EditText mMesaGLVersion;
     private EditText mMesaGLSLVersion;
@@ -80,19 +85,10 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 SwitchPreference.class);
         sustainedPerfSwitch.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
-        final ListPreference rendererListPreference = requirePreference("renderer", ListPreference.class);
-        setListPreference(rendererListPreference, "renderer");
-
-        rendererListPreference.setOnPreferenceChangeListener((pre, obj) -> {
-            Tools.LOCAL_RENDERER = (String) obj;
-            return true;
-        });
-
-        Preference driverPreference = requirePreference("zinkPreferSystemDriver");
-        if (!Tools.checkVulkanSupport(driverPreference.getContext().getPackageManager())) {
-            driverPreference.setVisible(false);
-        }
         SwitchPreference useSystemVulkan = requirePreference("zinkPreferSystemDriver", SwitchPreference.class);
+        if (!Tools.checkVulkanSupport(useSystemVulkan.getContext().getPackageManager())) {
+            useSystemVulkan.setVisible(false);
+        }
         useSystemVulkan.setOnPreferenceChangeListener((p, v) -> {
             boolean set = (boolean) v;
             boolean isAdreno = PGWTools.isAdrenoGPU();
@@ -110,13 +106,20 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             return true;
         });
 
+        final ListPreference rendererListPref = requirePreference("renderer", ListPreference.class);
         final ChooseMesaListPref CMesaLibP = requirePreference("CMesaLibrary", ChooseMesaListPref.class);
         final ListPreference CDriverModelP = requirePreference("CDriverModels", ListPreference.class);
         final ListPreference CMesaLDOP = requirePreference("ChooseMldo", ListPreference.class);
 
+        setListPreference(rendererListPref, "renderer");
         setListPreference(CMesaLibP, "CMesaLibrary");
         setListPreference(CDriverModelP, "CDriverModels");
         setListPreference(CMesaLDOP, "ChooseMldo");
+
+        rendererListPref.setOnPreferenceChangeListener((pre, obj) -> {
+            Tools.LOCAL_RENDERER = (String) obj;
+            return true;
+        });
 
         CMesaLibP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.MESA_LIBS = (String) obj;
@@ -137,12 +140,16 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
         SwitchPreference expRendererPref = requirePreference("ExperimentalSetup", SwitchPreference.class);
         expRendererPref.setOnPreferenceChangeListener((p, v) -> {
-            onChangeRenderer();
             boolean isExpRenderer = (boolean) v;
             if (isExpRenderer) {
-                onExpRendererDialog(p);
+                onExpRendererDialog(p, rendererListPref);
+                return false;
+            } else {
+                ((SwitchPreference) p).setChecked(false);
+                onChangeRenderer(rendererListPref);
+                setListPreference(rendererListPref, "renderer");
+                return true;
             }
-            return true;
         });
 
         // Custom GL/GLSL
@@ -172,6 +179,12 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
         setGLVersion.setOnPreferenceClickListener(preference -> {
             showSetGLVersionDialog();
+            return true;
+        });
+
+        Preference chooseTurnipDriverPref = requirePreference("chooseTurnipDriver", Preference.class);
+        chooseTurnipDriverPref.setOnPreferenceClickListener(preference -> {
+            onChooseTurnipDriverClick();
             return true;
         });
 
@@ -294,16 +307,17 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 .show();
     }
 
-    private void onExpRendererDialog(Preference pre) {
+    private void onExpRendererDialog(Preference pre, ListPreference rendererListPref) {
         new CustomDialog.Builder(getContext())
                 .setTitle(getString(R.string.preference_rendererexp_alertdialog_warning))
                 .setMessage(getString(R.string.preference_rendererexp_alertdialog_message))
-                .setConfirmListener(R.string.preference_rendererexp_alertdialog_done, customView -> true)
-                .setCancelListener(R.string.preference_rendererexp_alertdialog_cancel, customView -> {
-                    onChangeRenderer();
-                    ((SwitchPreference) pre).setChecked(false);
+                .setConfirmListener(R.string.preference_rendererexp_alertdialog_done, customView -> {
+                    ((SwitchPreference) pre).setChecked(true);
+                    onChangeRenderer(rendererListPref);
+                    setListPreference(rendererListPref, "renderer");
                     return true;
                 })
+                .setCancelListener(R.string.preference_rendererexp_alertdialog_cancel, customView -> true)
                 .setCancelable(false)
                 .setDraggable(true)
                 .build()
@@ -372,16 +386,20 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         }
     }
 
-    private void onChangeRenderer() {
+    private void onChangeRenderer(ListPreference rendererListPref) {
         String rendererValue = LauncherPreferences.DEFAULT_PREF.getString("renderer", null);
         if ("mesa_3d".equals(rendererValue)) {
             LauncherPreferences.DEFAULT_PREF.edit().putString("renderer", expRenderer).apply();
+            if (expRenderer != null) {
+                rendererListPref.setValue(expRenderer);
+            } else rendererListPref.setValueIndex(0);
         } else if ("vulkan_zink".equals(rendererValue)
                 || "virglrenderer".equals(rendererValue)
                 || "freedreno".equals(rendererValue)
                 || "panfrost".equals(rendererValue)) {
-            expRenderer = LauncherPreferences.DEFAULT_PREF.getString("renderer", null);
+            expRenderer = rendererValue;
             LauncherPreferences.DEFAULT_PREF.edit().putString("renderer", "mesa_3d").apply();
+            rendererListPref.setValue("mesa_3d");
         }
     }
 
@@ -439,6 +457,27 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 }
             });
         });
+    }
+
+    public void onChooseTurnipDriverClick() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/octet-stream");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent, "选择 .so 文件"), FILE_SELECT_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FILE_SELECT_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    TurnipUtils turnipUtils = new TurnipUtils(requireContext());
+                    turnipUtils.handleTurnipFile(uri);
+                }
+            }
+        }
     }
 
 }
