@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.widget.Toast;
 
+import net.kdt.pojavlaunch.Tools;
+import net.kdt.pojavlaunch.R;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
