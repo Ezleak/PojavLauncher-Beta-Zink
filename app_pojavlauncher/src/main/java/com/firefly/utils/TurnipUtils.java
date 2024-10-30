@@ -15,11 +15,13 @@ import java.io.OutputStream;
 
 public class TurnipUtils {
 
-    private final File turnipDir;
+    private Context context;
+    private File turnipDir;
 
     public TurnipUtils(Context context) {
+        this.context = context;
         // Define TURNIP_DIR in external storage
-        turnipDir = new File(Tools.TURNIP_DIR);
+        this.turnipDir = new File(Tools.TURNIP_DIR);
         if (!turnipDir.exists() && !turnipDir.mkdirs()) {
             throw new RuntimeException("Failed to create Turnip directory");
         }

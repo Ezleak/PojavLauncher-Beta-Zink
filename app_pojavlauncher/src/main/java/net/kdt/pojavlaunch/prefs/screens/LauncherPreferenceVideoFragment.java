@@ -25,6 +25,7 @@ import com.firefly.ui.prefs.ChooseMesaListPref;
 
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.EditText;
