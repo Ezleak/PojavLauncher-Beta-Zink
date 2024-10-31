@@ -138,7 +138,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
-        CTurnipP.setConfirmButton("新建", view -> selectTurnipDriverFile());
+        CTurnipP.setConfirmButton(R.string.pgw_settings_custom_turnip_creat, view -> selectTurnipDriverFile());
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -487,13 +487,8 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
     }
 
     private void showFolderNameDialog(Uri fileUri) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Enter Folder Name");
-
-        // EditText for folder name input
         EditText input = new EditText(getActivity());
         input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
-            // Restrict input to alphanumeric characters, digits, and periods
             for (int i = start; i < end; i++) {
                 char c = source.charAt(i);
                 if (!Character.isLetterOrDigit(c) && c != '.') {
@@ -502,19 +497,25 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             }
             return null;
         }});
-        builder.setView(input);
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-            String folderName = input.getText().toString().trim();
-            if (!folderName.isEmpty()) {
-                boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getActivity(), fileUri, folderName);
-                setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
-                Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
+        new CustomDialog.Builder(getActivity())
+            .setTitle(R.string.pgw_settings_ctu_version_name)
+            .setCustomView(input)
+            .setConfirmListener(android.R.string.confirm, customView -> {
+                String folderName = input.getText().toString().trim();
+                if (!folderName.isEmpty()) {
+                    boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getActivity(), fileUri, folderName);
+                    setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
+                    String message = success ? R.string.pgw_settings_ctu_saved : R.string.pgw_settings_ctu_save_fail;
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                } else {
+                    input.setError(getString(R.string.global_error_field_empty));
+                    return false;
+                }
+                return true;
+            })
+            .setCancelListener(android.R.string.cancel, customView -> true)
+            .build()
+            .show();
     }
 
 }

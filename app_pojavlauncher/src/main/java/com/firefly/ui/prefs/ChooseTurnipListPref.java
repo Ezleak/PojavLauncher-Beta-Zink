@@ -63,7 +63,7 @@ public class ChooseTurnipListPref extends ListPreference {
         layout.setOrientation(LinearLayout.VERTICAL);
         
         Button createButton = new Button(getContext());
-        createButton.setText("新建");
+        createButton.setText(R.string.pgw_settings_custom_turnip_creat);
         createButton.setOnClickListener(view -> {
             if (confirmButtonListener != null) {
                 confirmButtonListener.onClick(view);
@@ -100,8 +100,8 @@ public class ChooseTurnipListPref extends ListPreference {
 
     private void showDeleteConfirmationDialog(String version) {
         new AlertDialog.Builder(getContext())
-                .setTitle(R.string.preference_rendererexp_mesa_delete_title)
-                .setMessage(getContext().getString(R.string.preference_rendererexp_mesa_delete_message, version))
+                .setTitle(R.string.pgw_settings_ctu_delete_title)
+                .setMessage(getContext().getString(R.string.pgw_settings_ctu_delete_message, version))
                 .setPositiveButton(R.string.alertdialog_done, (dialog, which) -> {
                     boolean success = TurnipUtils.INSTANCE.deleteTurnipDriver(version);
                     if (success) {

@@ -168,7 +168,8 @@
             android:key="chooseTurnipDriver"
             android:entries="@array/turnip_files"
             android:entryValues="@array/turnip_values"
-            android:title="自定义Turnip驱动"
+            android:title="@string/pgw_settings_ctu"
+            android:dialogTitle="@string/pgw_settings_ctu_dia"
             app2:useSimpleSummaryProvider="true"
             app2:iconSpaceReserved="false"
             />
