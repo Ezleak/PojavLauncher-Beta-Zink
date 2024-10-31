@@ -40,7 +40,7 @@ public class TurnipUtils {
     }
 
     public String getTurnipDriver(String version) {
-        return Tools.TURNIP_DIR + "/" + version + "/libvulkan_freedreno.so";
+        return Tools.TURNIP_DIR + "/" + version;
     }
 
     public boolean saveTurnipDriver(Context context, Uri fileUri, String folderName) {
