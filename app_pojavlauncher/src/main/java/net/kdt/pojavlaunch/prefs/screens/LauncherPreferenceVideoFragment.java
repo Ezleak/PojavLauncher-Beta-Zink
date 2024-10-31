@@ -19,6 +19,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 
 import com.firefly.utils.PGWTools;
+import com.firefly.utils.TurnipUtils;
 import com.firefly.ui.dialog.CustomDialog;
 import com.firefly.ui.prefs.ChooseMesaListPref;
 import com.firefly.ui.prefs.ChooseTurnipListPref;
@@ -45,6 +46,7 @@ import java.util.Set;
  */
 public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment {
 
+    private static final int FILE_SELECT_CODE = 100;
     private EditText mSetVideoResolution;
     private EditText mMesaGLVersion;
     private EditText mMesaGLSLVersion;
@@ -136,6 +138,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
+        CTurnipP.setConfirmButton("新建", view -> selectTurnipDriverFile());
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -281,7 +284,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             array = Tools.getCompatibleRenderers(getContext());
             Tools.LOCAL_RENDERER = value;
         } else if (preferenceKey.equals("chooseTurnipDriver")) {
-            array = Tools.getCompatibleTurnipDriver(getContext());
+            array = Tools.getCompatibleCTurnipDriver(getContext());
             Tools.TURNIP_LIBS = value;
         }
         listPreference.setEntries(array.getArray());
@@ -463,6 +466,55 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 }
             });
         });
+    }
+
+    private void selectTurnipDriverFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/octet-stream");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
+            Uri fileUri = data.getData();
+            if (fileUri != null) {
+                showFolderNameDialog(fileUri);
+            }
+        }
+    }
+
+    private void showFolderNameDialog(Uri fileUri) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Enter Folder Name");
+
+        // EditText for folder name input
+        EditText input = new EditText(getActivity());
+        input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
+            // Restrict input to alphanumeric characters, digits, and periods
+            for (int i = start; i < end; i++) {
+                char c = source.charAt(i);
+                if (!Character.isLetterOrDigit(c) && c != '.') {
+                    return "";
+                }
+            }
+            return null;
+        }});
+        builder.setView(input);
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            String folderName = input.getText().toString().trim();
+            if (!folderName.isEmpty()) {
+                TurnipUtils turnipUtils = new TurnipUtils(getActivity());
+                boolean success = turnipUtils.saveTurnipDriver(fileUri, folderName);
+                Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
 }

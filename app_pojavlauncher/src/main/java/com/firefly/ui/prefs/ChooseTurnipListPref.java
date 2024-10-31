@@ -1,16 +1,12 @@
 package com.firefly.ui.prefs;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.text.InputFilter;
-import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 
@@ -22,10 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ChooseTurnipListPref extends ListPreference {
-
-    private static final int FILE_SELECT_CODE = 100;
     private List<String> defaultLibs;
     private OnPreferenceChangeListener preferenceChangeListener;
+    private View.OnClickListener confirmButtonListener;
 
     public ChooseTurnipListPref(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,7 +33,10 @@ public class ChooseTurnipListPref extends ListPreference {
 
     @Override
     protected void onClick() {
-        String initialValue = getValue();
+        showDialog();
+    }
+
+    private void showDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getDialogTitle());
 
@@ -50,18 +48,28 @@ public class ChooseTurnipListPref extends ListPreference {
 
         builder.setItems(entries, (dialog, which) -> {
             String newValue = getEntryValues()[which].toString();
-            if (!newValue.equals(initialValue)) {
-                if (preferenceChangeListener != null) {
-                    if (preferenceChangeListener.onPreferenceChange(this, newValue)) {
-                        setValue(newValue);
-                    }
-                } else {
+            if (preferenceChangeListener != null) {
+                if (preferenceChangeListener.onPreferenceChange(this, newValue)) {
                     setValue(newValue);
                 }
+            } else {
+                setValue(newValue);
             }
             dialog.dismiss();
         });
-        builder.setPositiveButton("新建", (d, i) -> selectTurnipDriverFile());
+
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        
+        Button createButton = new Button(getContext());
+        createButton.setText("新建");
+        createButton.setOnClickListener(view -> {
+            if (confirmButtonListener != null) {
+                confirmButtonListener.onClick(view);
+            }
+        });
+        layout.addView(createButton);
+        builder.setView(layout);
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -83,6 +91,10 @@ public class ChooseTurnipListPref extends ListPreference {
     public void setOnPreferenceChangeListener(OnPreferenceChangeListener listener) {
         this.preferenceChangeListener = listener;
         super.setOnPreferenceChangeListener(listener);
+    }
+
+    public void setConfirmButton(String buttonText, View.OnClickListener listener) {
+        this.confirmButtonListener = listener;
     }
 
     private void showDeleteConfirmationDialog(String version) {
@@ -111,53 +123,4 @@ public class ChooseTurnipListPref extends ListPreference {
             setValueIndex(0);
         }
     }
-
-    private void selectTurnipDriverFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/octet-stream");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        ((Activity) getContext()).startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
-            Uri fileUri = data.getData();
-            if (fileUri != null) {
-                showFolderNameDialog(fileUri);
-            }
-        }
-    }
-
-    private void showFolderNameDialog(Uri fileUri) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Enter Folder Name");
-
-        EditText input = new EditText(getContext());
-        input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
-            for (int i = start; i < end; i++) {
-                char c = source.charAt(i);
-                if (!Character.isLetterOrDigit(c) && c != '.') {
-                    return "";
-                }
-            }
-            return null;
-        }});
-        builder.setView(input);
-
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-            String folderName = input.getText().toString().trim();
-            if (!folderName.isEmpty()) {
-                boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getContext(), fileUri, folderName);
-                Toast.makeText(getContext(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
-
 }
