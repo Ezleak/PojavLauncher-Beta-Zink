@@ -19,9 +19,9 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 
 import com.firefly.utils.PGWTools;
-import com.firefly.utils.TurnipUtils;
 import com.firefly.ui.dialog.CustomDialog;
 import com.firefly.ui.prefs.ChooseMesaListPref;
+import com.firefly.ui.prefs.ChooseTurnipListPref;
 
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -45,7 +45,6 @@ import java.util.Set;
  */
 public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment {
 
-    private static final int FILE_SELECT_CODE = 100;
     private EditText mSetVideoResolution;
     private EditText mMesaGLVersion;
     private EditText mMesaGLSLVersion;
@@ -111,11 +110,13 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
         final ListPreference rendererListPref = requirePreference("renderer", ListPreference.class);
         final ChooseMesaListPref CMesaLibP = requirePreference("CMesaLibrary", ChooseMesaListPref.class);
+        final ChooseTurnipListPref CTurnipP = requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class);
         final ListPreference CDriverModelP = requirePreference("CDriverModels", ListPreference.class);
         final ListPreference CMesaLDOP = requirePreference("ChooseMldo", ListPreference.class);
 
         setListPreference(rendererListPref, "renderer");
         setListPreference(CMesaLibP, "CMesaLibrary");
+        setListPreference(CTurnipP, "chooseTurnipDriver");
         setListPreference(CDriverModelP, "CDriverModels");
         setListPreference(CMesaLDOP, "ChooseMldo");
 
@@ -128,6 +129,11 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             Tools.MESA_LIBS = (String) obj;
             setListPreference(CDriverModelP, "CDriverModels");
             CDriverModelP.setValueIndex(0);
+            return true;
+        });
+
+        CTurnipP.setOnPreferenceChangeListener((pre, obj) -> {
+            Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
 
@@ -182,12 +188,6 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
         setGLVersion.setOnPreferenceClickListener(preference -> {
             showSetGLVersionDialog();
-            return true;
-        });
-
-        Preference chooseTurnipDriverPref = requirePreference("chooseTurnipDriver", Preference.class);
-        chooseTurnipDriverPref.setOnPreferenceClickListener(preference -> {
-            selectTurnipDriverFile();
             return true;
         });
 
@@ -280,6 +280,9 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         } else if (preferenceKey.equals("renderer")) {
             array = Tools.getCompatibleRenderers(getContext());
             Tools.LOCAL_RENDERER = value;
+        } else if (preferenceKey.equals("chooseTurnipDriver")) {
+            array = Tools.getCompatibleTurnipDriver(getContext());
+            Tools.TURNIP_LIBS = value;
         }
         listPreference.setEntries(array.getArray());
         listPreference.setEntryValues(array.getList().toArray(new String[0]));
@@ -460,55 +463,6 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 }
             });
         });
-    }
-
-    private void selectTurnipDriverFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/octet-stream");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
-            Uri fileUri = data.getData();
-            if (fileUri != null) {
-                showFolderNameDialog(fileUri);
-            }
-        }
-    }
-
-    private void showFolderNameDialog(Uri fileUri) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Enter Folder Name");
-
-        // EditText for folder name input
-        EditText input = new EditText(getActivity());
-        input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
-            // Restrict input to alphanumeric characters, digits, and periods
-            for (int i = start; i < end; i++) {
-                char c = source.charAt(i);
-                if (!Character.isLetterOrDigit(c) && c != '.') {
-                    return "";
-                }
-            }
-            return null;
-        }});
-        builder.setView(input);
-        builder.setPositiveButton("Confirm", (dialog, which) -> {
-            String folderName = input.getText().toString().trim();
-            if (!folderName.isEmpty()) {
-                TurnipUtils turnipUtils = new TurnipUtils(getActivity());
-                boolean success = turnipUtils.saveTurnipDriver(fileUri, folderName);
-                Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
     }
 
 }

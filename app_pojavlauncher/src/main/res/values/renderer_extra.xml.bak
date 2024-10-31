@@ -46,13 +46,4 @@
         <item>virtio</item>
     </string-array>
 
-    <string-array name="turnip_files">
-        <item name="1">Default</item>
-    </string-array>
-
-    <string-array name="turnip_values">
-        <item>default</item>
-    </string-array>
-
 </resources>
-
