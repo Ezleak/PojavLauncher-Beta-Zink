@@ -445,7 +445,7 @@ public class JREUtils {
 
     private static void loadCustomTurnip() throws Throwable {
         if (TURNIP_LIBS == null) return;
-        String folder;
+        String folder = null;
         switch (TURNIP_LIBS) {
             case "default":
                 // Nothing to do here
