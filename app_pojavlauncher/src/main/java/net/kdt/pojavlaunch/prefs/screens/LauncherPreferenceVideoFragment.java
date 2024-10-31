@@ -507,6 +507,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             String folderName = input.getText().toString().trim();
             if (!folderName.isEmpty()) {
                 boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getActivity(), fileUri, folderName);
+                setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
                 Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();

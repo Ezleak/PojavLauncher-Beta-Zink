@@ -440,6 +440,25 @@ public class JREUtils {
         }
     }
 
+    private static void loadCustomTurnip() throws Throwable {
+        if (TURNIP_LIBS == null) return;
+        String folder;
+        switch (TURNIP_LIBS) {
+            case "default":
+                // Nothing to do here
+                break;
+            default:
+                folder = TurnipUtils.INSTANCE.getTurnipDriver(TURNIP_LIBS);
+                break;
+        }
+        if (folder == null) return;
+        try {
+            Os.setenv("TURNIP_DIR", folder, true);
+        } catch (Exception e) {
+            System.err.println("Error setting environment variable: " + e.getMessage());
+        }
+    }
+
     public static int launchJavaVM(final Activity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
         String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
 
@@ -447,6 +466,7 @@ public class JREUtils {
 
         setJavaEnvironment(runtimeHome);
         checkAndUsedJSPH(runtime);
+        loadCustomTurnip();
 
         final String graphicsLib = loadGraphicsLibrary();
         if (LOCAL_RENDERER != null && !LOCAL_RENDERER.startsWith("opengles"))

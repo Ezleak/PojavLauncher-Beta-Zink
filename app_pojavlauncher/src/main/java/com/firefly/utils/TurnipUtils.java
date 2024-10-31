@@ -32,7 +32,7 @@ public class TurnipUtils {
         List<String> list = new ArrayList<>();
         File[] files = turnipDir.listFiles();
         for (File file : files) {
-            if (file.isDirectory() && new File(file.getAbsolutePath() + "/turnip.so").exists()) {
+            if (file.isDirectory() && new File(file.getAbsolutePath() + "/libvulkan_freedreno.so").exists()) {
                 list.add(file.getName());
             }
         }
@@ -40,7 +40,7 @@ public class TurnipUtils {
     }
 
     public String getTurnipDriver(String version) {
-        return Tools.TURNIP_DIR + "/" + version + "/turnip.so";
+        return Tools.TURNIP_DIR + "/" + version + "/libvulkan_freedreno.so";
     }
 
     public boolean saveTurnipDriver(Context context, Uri fileUri, String folderName) {
@@ -50,7 +50,7 @@ public class TurnipUtils {
                 return false;
             }
 
-            File targetFile = new File(targetDir, "turnip.so");
+            File targetFile = new File(targetDir, "libvulkan_freedreno.so");
 
             try (InputStream inputStream = context.getContentResolver().openInputStream(fileUri);
                  OutputStream outputStream = new FileOutputStream(targetFile)) {
