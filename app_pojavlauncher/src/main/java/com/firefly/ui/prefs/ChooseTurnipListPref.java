@@ -131,13 +131,11 @@ public class ChooseTurnipListPref extends ListPreference {
     }
 
     private void showFolderNameDialog(Uri fileUri) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Enter Folder Name");
 
-        // EditText for folder name input
-        EditText input = new EditText(getActivity());
+        EditText input = new EditText(getContext());
         input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
-            // Restrict input to alphanumeric characters, digits, and periods
             for (int i = start; i < end; i++) {
                 char c = source.charAt(i);
                 if (!Character.isLetterOrDigit(c) && c != '.') {
@@ -147,15 +145,17 @@ public class ChooseTurnipListPref extends ListPreference {
             return null;
         }});
         builder.setView(input);
+
         builder.setPositiveButton("Confirm", (dialog, which) -> {
             String folderName = input.getText().toString().trim();
             if (!folderName.isEmpty()) {
-                boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getActivity(), fileUri, folderName);
-                Toast.makeText(getActivity(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
+                boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getContext(), fileUri, folderName);
+                Toast.makeText(getContext(), success ? "Driver saved successfully" : "Failed to save driver", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Folder name cannot be empty", Toast.LENGTH_SHORT).show();
             }
         });
+
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
