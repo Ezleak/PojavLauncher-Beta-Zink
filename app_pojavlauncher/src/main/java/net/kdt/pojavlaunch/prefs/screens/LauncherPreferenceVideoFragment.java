@@ -138,7 +138,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
-        CTurnipP.setConfirmButton(R.string.pgw_settings_custom_turnip_creat, view -> selectTurnipDriverFile());
+        CTurnipP.setConfirmButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> selectTurnipDriverFile());
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -498,14 +498,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             return null;
         }});
         new CustomDialog.Builder(getActivity())
-            .setTitle(R.string.pgw_settings_ctu_version_name)
+            .setTitle(getString(R.string.pgw_settings_ctu_version_name))
             .setCustomView(input)
-            .setConfirmListener(android.R.string.confirm, customView -> {
+            .setConfirmListener(android.R.string.ok, customView -> {
                 String folderName = input.getText().toString().trim();
                 if (!folderName.isEmpty()) {
                     boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(getActivity(), fileUri, folderName);
                     setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
-                    String message = success ? R.string.pgw_settings_ctu_saved : R.string.pgw_settings_ctu_save_fail;
+                    String message = getString(success ? R.string.pgw_settings_ctu_saved : R.string.pgw_settings_ctu_save_fail);
                     Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                 } else {
                     input.setError(getString(R.string.global_error_field_empty));
