@@ -20,7 +20,6 @@ public class TurnipUtils {
 
     public static final TurnipUtils INSTANCE = new TurnipUtils();
     private final File turnipDir;
-    private Map<String, MesaObj> mesaObjMap;
 
     private TurnipUtils() {
         this.turnipDir = new File(Tools.TURNIP_DIR);
