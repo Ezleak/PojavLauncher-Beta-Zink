@@ -6,6 +6,7 @@ import static net.kdt.pojavlaunch.Tools.DRIVER_MODEL;
 import static net.kdt.pojavlaunch.Tools.LOADER_OVERRIDE;
 import static net.kdt.pojavlaunch.Tools.LOCAL_RENDERER;
 import static net.kdt.pojavlaunch.Tools.MESA_LIBS;
+import static net.kdt.pojavlaunch.Tools.TURNIP_LIBS;
 import static net.kdt.pojavlaunch.Tools.NATIVE_LIB_DIR;
 import static net.kdt.pojavlaunch.Tools.currentDisplayMetrics;
 import static net.kdt.pojavlaunch.Tools.shareLog;
@@ -20,6 +21,8 @@ import android.system.Os;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.firefly.utils.TurnipUtils;
 
 import com.movtery.ui.subassembly.customprofilepath.ProfilePathHome;
 import com.movtery.ui.subassembly.customprofilepath.ProfilePathManager;
