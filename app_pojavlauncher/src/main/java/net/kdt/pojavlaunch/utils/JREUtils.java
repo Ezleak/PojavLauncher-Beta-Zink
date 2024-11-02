@@ -310,8 +310,6 @@ public class JREUtils {
         Log.d("DynamicLoader", "Base LD_LIBRARY_PATH: " + LD_LIBRARY_PATH);
         Log.d("DynamicLoader", "Internal LD_LIBRARY_PATH: " + jvmLibraryPath + ":" + LD_LIBRARY_PATH);
         setLdLibraryPath(jvmLibraryPath + ":" + LD_LIBRARY_PATH);
-
-        // return ldLibraryPath;
     }
 
     public static void setRendererConfig(String localLibrary) throws Throwable {
@@ -433,6 +431,7 @@ public class JREUtils {
         File[] files = dir.listFiles((dir1, name) -> name.startsWith(jsphName));
         if (files != null && files.length > 0) {
             String libName = NATIVE_LIB_DIR + "/" + jsphName + ".so";
+            Logger.appendToLog("Added custom env: JSP=" + libName);
             try {
                 Os.setenv("JSP", libName, true);
             } catch (Exception e) {
@@ -444,17 +443,10 @@ public class JREUtils {
     }
 
     private static void loadCustomTurnip() throws Throwable {
-        if (TURNIP_LIBS == null) return;
-        String folder = null;
-        switch (TURNIP_LIBS) {
-            case "default":
-                // Nothing to do here
-                break;
-            default:
-                folder = TurnipUtils.INSTANCE.getTurnipDriver(TURNIP_LIBS);
-                break;
-        }
+        if (TURNIP_LIBS.equals("default") || PREF_ZINK_PREFER_SYSTEM_DRIVER) return;
+        String folder = TurnipUtils.INSTANCE.getTurnipDriver(TURNIP_LIBS);
         if (folder == null) return;
+        Logger.appendToLog("Added custom env: TURNIP_DIR=" + folder);
         try {
             Os.setenv("TURNIP_DIR", folder, true);
         } catch (Exception e) {
@@ -469,7 +461,7 @@ public class JREUtils {
 
         setJavaEnvironment(runtimeHome);
         checkAndUsedJSPH(runtime);
-        loadCustomTurnip();
+        if (TURNIP_LIBS != null) loadCustomTurnip();
 
         final String graphicsLib = loadGraphicsLibrary();
         if (LOCAL_RENDERER != null && !LOCAL_RENDERER.startsWith("opengles"))
