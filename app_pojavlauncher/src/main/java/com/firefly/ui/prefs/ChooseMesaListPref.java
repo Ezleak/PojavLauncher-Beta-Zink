@@ -2,6 +2,9 @@ package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,6 +22,8 @@ public class ChooseMesaListPref extends ListPreference {
 
     private List<String> defaultLibs;
     private OnPreferenceChangeListener preferenceChangeListener;
+    private View.OnClickListener importClickListener;
+    private View.OnClickListener downloadClickListener;
 
     public ChooseMesaListPref(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,8 +49,8 @@ public class ChooseMesaListPref extends ListPreference {
         builder.setItems(entries, (dialog, which) -> {
             String newValue = getEntryValues()[which].toString();
             if (!newValue.equals(initialValue)) {
-                if (preferenceChangeListener != null) {
-                    if (preferenceChangeListener.onPreferenceChange(this, newValue)) {
+                if (getOnPreferenceChangeListener() != null) {
+                    if (getOnPreferenceChangeListener().onPreferenceChange(this, newValue)) {
                         setValue(newValue);
                     }
                 } else {
@@ -55,26 +60,51 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.show();
 
-        ListView listView = dialog.getListView();
-        listView.setOnItemLongClickListener((adapterView, view, position, id) -> {
-            String selectedVersion = getEntryValues()[position].toString();
-            if (defaultLibs.contains(selectedVersion)) {
-                Toast.makeText(getContext(), R.string.preference_rendererexp_mesa_delete_defaultlib, Toast.LENGTH_SHORT).show();
-            } else {
-                showDeleteConfirmationDialog(selectedVersion);
+        LinearLayout buttonLayout = new LinearLayout(getContext());
+        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        buttonLayout.setPadding(50, 20, 50, 20);
+        buttonLayout.setGravity(android.view.Gravity.CENTER);
+
+        Button importButton = new Button(getContext());
+        importButton.setText(R.string.pgw_settings_custom_turnip_creat);
+        importButton.setOnClickListener(v -> {
+            if (importClickListener != null) {
+                importClickListener.onClick(v);
             }
             dialog.dismiss();
-            return true;
         });
+
+        Button downloadButton = new Button(getContext());
+        downloadButton.setText("下载");
+        downloadButton.setOnClickListener(v -> {
+            if (downloadClickListener != null) {
+                downloadClickListener.onClick(v);
+            }
+            dialog.dismiss();
+        });
+
+        buttonLayout.addView(importButton);
+        buttonLayout.addView(downloadButton);
+
+        dialog.getWindow().addContentView(buttonLayout, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
     }
 
     @Override
     public void setOnPreferenceChangeListener(OnPreferenceChangeListener listener) {
         this.preferenceChangeListener = listener;
         super.setOnPreferenceChangeListener(listener);
+    }
+
+    public void setImportButton(View.OnClickListener listener) {
+        this.importClickListener = listener;
+    }
+
+    public void setDownloadButton(View.OnClickListener listener) {
+        this.downloadClickListener = listener;
     }
 
     private void showDeleteConfirmationDialog(String version) {

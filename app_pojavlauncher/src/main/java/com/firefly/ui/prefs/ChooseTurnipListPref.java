@@ -21,7 +21,7 @@ import java.util.List;
 public class ChooseTurnipListPref extends ListPreference {
     private List<String> defaultLibs;
     private OnPreferenceChangeListener preferenceChangeListener;
-    private View.OnClickListener confirmButtonListener;
+    private View.OnClickListener importButronListener;
 
     public ChooseTurnipListPref(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,10 +34,6 @@ public class ChooseTurnipListPref extends ListPreference {
 
     @Override
     protected void onClick() {
-        showDialog();
-    }
-
-    private void showDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getDialogTitle());
 
@@ -65,8 +61,8 @@ public class ChooseTurnipListPref extends ListPreference {
         Button createButton = new Button(getContext());
         createButton.setText(R.string.pgw_settings_custom_turnip_creat);
         createButton.setOnClickListener(view -> {
-            if (confirmButtonListener != null) {
-                confirmButtonListener.onClick(view);
+            if (importButronListener != null) {
+                importButronListener.onClick(view);
             }
         });
         layout.addView(createButton);
@@ -94,8 +90,8 @@ public class ChooseTurnipListPref extends ListPreference {
         super.setOnPreferenceChangeListener(listener);
     }
 
-    public void setConfirmButton(String buttonText, View.OnClickListener listener) {
-        this.confirmButtonListener = listener;
+    public void setImportButton(String buttonText, View.OnClickListener listener) {
+        this.importButronListener = listener;
     }
 
     private void showDeleteConfirmationDialog(String version) {

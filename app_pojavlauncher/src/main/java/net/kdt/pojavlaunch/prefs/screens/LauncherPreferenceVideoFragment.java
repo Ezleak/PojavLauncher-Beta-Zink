@@ -48,6 +48,7 @@ import java.util.Set;
 public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment {
 
     private static final int FILE_SELECT_CODE = 100;
+    private static final String EXTRA_ACTION_TYPE = "ACTION_TYPE";
     private EditText mSetVideoResolution;
     private EditText mMesaGLVersion;
     private EditText mMesaGLSLVersion;
@@ -105,12 +106,6 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             return false;
         });
 
-        final Preference downloadMesa = requirePreference("DownloadMesa", Preference.class);
-        downloadMesa.setOnPreferenceClickListener((a) -> {
-            loadMesaList();
-            return true;
-        });
-
         final ListPreference rendererListPref = requirePreference("renderer", ListPreference.class);
         final ChooseMesaListPref CMesaLibP = requirePreference("CMesaLibrary", ChooseMesaListPref.class);
         final ChooseTurnipListPref CTurnipP = requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class);
@@ -134,12 +129,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             CDriverModelP.setValueIndex(0);
             return true;
         });
+        CMesaLibP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> onSelectFile("ADD_MESA"));
+        CMesaLibP.setDownloadButton(getString(R.string.preference_extra_mesa_download), view -> loadMesaList());
 
         CTurnipP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
-        CTurnipP.setConfirmButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> selectTurnipDriverFile());
+        CTurnipP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> onSelectFile("ADD_TURNIP"));
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -470,10 +467,11 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
     }
 
-    private void selectTurnipDriverFile() {
+    private void onSelectFile(String actionType) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/octet-stream");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(EXTRA_ACTION_TYPE, actionType);
         startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
     }
 
@@ -483,19 +481,70 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
             Uri fileUri = data.getData();
             if (fileUri != null) {
-                showFolderNameDialog(fileUri);
+                String actionType = data.getStringExtra(EXTRA_ACTION_TYPE);
+                handleFileSelection(actionType, fileUri);
             }
         }
     }
 
-    private void showFolderNameDialog(Uri fileUri) {
+    private void handleFileSelection(String actionType, Uri fileUri) {
+        switch (actionType) {
+            case "ADD_MESA":
+                setMesaNameDialog(fileUri);
+                break;
+            case "ADD_TURNIP":
+                setTurnipNameDialog(fileUri);
+                break;
+            default:
+                // Nothing to do here
+                break;
+        }
+    }
+
+    private void setMesaNameDialog(Uri fileUri) {
         EditText input = new EditText(getActivity());
+        input.setHint(getString(R.string.pgw_settings_cml_format));
         input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
             for (int i = start; i < end; i++) {
                 char c = source.charAt(i);
-                if (!Character.isLetterOrDigit(c) && c != '.') {
-                    return "";
+                if (!Character.isDigit(c) && c != '.' && c != 'x') return "";
+            }
+            return null;
+        }});
+        new CustomDialog.Builder(getActivity())
+            .setTitle(getString(R.string.pgw_settings_ctu_version_name))
+            .setCustomView(input)
+            .setConfirmListener(android.R.string.ok, customView -> {
+                String folderName = input.getText().toString().trim();
+                if (folderName.isEmpty()) {
+                    input.setError(getString(R.string.global_error_field_empty));
+                    return false;
+                } else if (!folderName.matches("(\\d{2}|xx)\\.(\\d|x)\\.(\\d|x)")) {
+                    input.setError(getString(R.string.pgw_settings_cml_Illegitimate));
+                    return false;
+                } else {
+                    boolean success = MesaUtils.INSTANCE.saveMesaVersion(getActivity(), fileUri, folderName);
+                    setListPreference(requirePreference("CMesaLibrary", ChooseTurnipListPref.class), "CMesaLibrary");
+                    String message = getString(success ? R.string.pgw_settings_cml_saved : R.string.pgw_settings_cml_save_fail);
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                 }
+                return true;
+            })
+            .setCancelListener(android.R.string.cancel, customView -> true)
+            .build()
+            .show();
+    }
+
+    private void setTurnipNameDialog(Uri fileUri) {
+        EditText input = new EditText(getActivity());
+        input.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
+            String currentText = dest.toString();
+            char lastChar = currentText.isEmpty() ? ' ' : currentText.charAt(currentText.length() - 1);
+            for (int i = start; i < end; i++) {
+                char c = source.charAt(i);
+                if (!Character.isLetterOrDigit(c) && c != '.' && c!= '-') return "";
+                if (c == '.' && lastChar == '.') return "";
+                lastChar = c;
             }
             return null;
         }});
