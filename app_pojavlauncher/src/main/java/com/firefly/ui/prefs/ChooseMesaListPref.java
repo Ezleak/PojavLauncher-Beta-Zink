@@ -99,11 +99,11 @@ public class ChooseMesaListPref extends ListPreference {
         super.setOnPreferenceChangeListener(listener);
     }
 
-    public void setImportButton(View.OnClickListener listener) {
+    public void setImportButton(String buttonText, View.OnClickListener listener) {
         this.importClickListener = listener;
     }
 
-    public void setDownloadButton(View.OnClickListener listener) {
+    public void setDownloadButton(String buttonText, View.OnClickListener listener) {
         this.downloadClickListener = listener;
     }
 
