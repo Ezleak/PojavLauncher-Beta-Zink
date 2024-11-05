@@ -71,12 +71,6 @@ public class ChooseTurnipListPref extends ListPreference {
         layout.addView(createButton);
         builder.setView(layout);
 
-        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenHeight = displayMetrics.heightPixels;
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (screenHeight * 0.7));
-
         dialog.show();
 
         ListView listView = dialog.getListView();
