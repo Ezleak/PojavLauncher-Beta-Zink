@@ -78,7 +78,7 @@ public class ChooseMesaListPref extends ListPreference {
         });
 
         Button downloadButton = new Button(getContext());
-        downloadButton.setText("下载");
+        downloadButton.setText(R.string.preference_extra_mesa_download);
         downloadButton.setOnClickListener(v -> {
             if (downloadClickListener != null) {
                 downloadClickListener.onClick(v);
