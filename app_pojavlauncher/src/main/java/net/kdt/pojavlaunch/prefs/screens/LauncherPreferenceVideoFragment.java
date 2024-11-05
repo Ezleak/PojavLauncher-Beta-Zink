@@ -48,7 +48,7 @@ import java.util.Set;
 public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment {
 
     private static final int FILE_SELECT_CODE = 100;
-    private static final String EXTRA_ACTION_TYPE = "ACTION_TYPE";
+    private static volatile String FILE_SELECT = "NONE";
     private EditText mSetVideoResolution;
     private EditText mMesaGLVersion;
     private EditText mMesaGLSLVersion;
@@ -129,14 +129,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             CDriverModelP.setValueIndex(0);
             return true;
         });
-        CMesaLibP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> onSelectFile("ADD_MESA"));
+        CMesaLibP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> handleFileSelection("ADD_MESA"));
         CMesaLibP.setDownloadButton(getString(R.string.preference_extra_mesa_download), view -> loadMesaList());
 
         CTurnipP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.TURNIP_LIBS = (String) obj;
             return true;
         });
-        CTurnipP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> onSelectFile("ADD_TURNIP"));
+        CTurnipP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> handleFileSelection("ADD_TURNIP"));
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -467,11 +467,15 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
     }
 
-    private void onSelectFile(String actionType) {
+    private void handleFileSelection(String selectType) {
+        FILE_SELECT = selectType;
+        onSelectFile();
+    }
+
+    private void onSelectFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/octet-stream");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(EXTRA_ACTION_TYPE, actionType);
         startActivityForResult(Intent.createChooser(intent, "Select .so file"), FILE_SELECT_CODE);
     }
 
@@ -480,24 +484,20 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FILE_SELECT_CODE && resultCode == getActivity().RESULT_OK && data != null) {
             Uri fileUri = data.getData();
-            if (fileUri != null) {
-                String actionType = data.getStringExtra(EXTRA_ACTION_TYPE);
-                handleFileSelection(actionType, fileUri);
+            if (fileUri != null && FILE_SELECT != null) {
+                switch (FILE_SELECT) {
+                    case "ADD_MESA":
+                        setMesaNameDialog(fileUri);
+                        break;
+                    case "ADD_TURNIP":
+                        setTurnipNameDialog(fileUri);
+                        break;
+                    default:
+                        // Nothing to do here
+                        break;
+                }
+                FILE_SELECT = "NONE";
             }
-        }
-    }
-
-    private void handleFileSelection(String actionType, Uri fileUri) {
-        switch (actionType) {
-            case "ADD_MESA":
-                setMesaNameDialog(fileUri);
-                break;
-            case "ADD_TURNIP":
-                setTurnipNameDialog(fileUri);
-                break;
-            default:
-                // Nothing to do here
-                break;
         }
     }
 
