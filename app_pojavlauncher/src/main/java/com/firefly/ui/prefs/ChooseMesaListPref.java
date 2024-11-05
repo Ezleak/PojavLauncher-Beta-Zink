@@ -71,7 +71,6 @@ public class ChooseMesaListPref extends ListPreference {
             if (importClickListener != null) {
                 importClickListener.onClick(v);
             }
-            dialog.dismiss();
         });
 
         Button downloadButton = new Button(getContext());
@@ -80,7 +79,6 @@ public class ChooseMesaListPref extends ListPreference {
             if (downloadClickListener != null) {
                 downloadClickListener.onClick(v);
             }
-            dialog.dismiss();
         });
 
         layout.addView(importButton);
