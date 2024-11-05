@@ -60,13 +60,10 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-
-        LinearLayout buttonLayout = new LinearLayout(getContext());
-        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
-        buttonLayout.setPadding(50, 20, 50, 20);
-        buttonLayout.setGravity(android.view.Gravity.CENTER);
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setPadding(50, 20, 50, 20);
+        layout.setGravity(android.view.Gravity.CENTER);
 
         Button importButton = new Button(getContext());
         importButton.setText(R.string.pgw_settings_custom_turnip_creat);
@@ -86,11 +83,25 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        buttonLayout.addView(importButton);
-        buttonLayout.addView(downloadButton);
+        layout.addView(importButton);
+        layout.addView(downloadButton);
+        builder.setView(layout);
 
-        dialog.getWindow().addContentView(buttonLayout, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        ListView listView = dialog.getListView();
+        listView.setOnItemLongClickListener((adapterView, view, position, id) -> {
+            String selectedVersion = getEntryValues()[position].toString();
+            if (defaultLibs.contains(selectedVersion)) {
+                Toast.makeText(getContext(), R.string.preference_rendererexp_mesa_delete_defaultlib, Toast.LENGTH_SHORT).show();
+            } else {
+                showDeleteConfirmationDialog(selectedVersion);
+            }
+            dialog.dismiss();
+            return true;
+        });
+
     }
 
     @Override

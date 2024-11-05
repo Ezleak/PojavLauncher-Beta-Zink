@@ -524,7 +524,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                     return false;
                 } else {
                     boolean success = MesaUtils.INSTANCE.saveMesaVersion(getActivity(), fileUri, folderName);
-                    setListPreference(requirePreference("CMesaLibrary", ChooseTurnipListPref.class), "CMesaLibrary");
+                    setListPreference(requirePreference("CMesaLibrary", CMesaLibP.class), "CMesaLibrary");
                     String message = getString(success ? R.string.pgw_settings_cml_saved : R.string.pgw_settings_cml_save_fail);
                     Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                 }
