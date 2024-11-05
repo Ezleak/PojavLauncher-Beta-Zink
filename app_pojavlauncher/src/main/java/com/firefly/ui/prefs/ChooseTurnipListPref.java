@@ -2,7 +2,10 @@ package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +58,8 @@ public class ChooseTurnipListPref extends ListPreference {
             dialog.dismiss();
         });
 
+        AlertDialog dialog = builder.create();
+
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         
@@ -64,11 +69,17 @@ public class ChooseTurnipListPref extends ListPreference {
             if (importButronListener != null) {
                 importButronListener.onClick(view);
             }
+            dialog.dismiss();
         });
         layout.addView(createButton);
         builder.setView(layout);
 
-        AlertDialog dialog = builder.create();
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (screenHeight * 0.7));
+
         dialog.show();
 
         ListView listView = dialog.getListView();
