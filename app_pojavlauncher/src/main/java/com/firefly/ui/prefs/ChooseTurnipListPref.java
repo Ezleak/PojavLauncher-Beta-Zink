@@ -118,7 +118,7 @@ public class ChooseTurnipListPref extends ListPreference {
 
     private void showDeleteConfirmationDialog(String version) {
         new CustomDialog.Builder(getContext())
-                .setTitle(getContext(),getString(R.string.pgw_settings_ctu_delete_title))
+                .setTitle(getContext().getString(R.string.pgw_settings_ctu_delete_title))
                 .setMessage(getContext().getString(R.string.pgw_settings_ctu_delete_message, version))
                 .setConfirmListener(android.R.string.ok, customView -> {
                     boolean success = TurnipUtils.INSTANCE.deleteTurnipDriver(version);
