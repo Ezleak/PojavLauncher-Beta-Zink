@@ -15,7 +15,7 @@ import androidx.preference.ListPreference;
 
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
-import com.firefly.dialog.CustomDialog;
+import com.firefly.ui.dialog.CustomDialog;
 import com.firefly.utils.TurnipUtils;
 
 import java.util.Arrays;
@@ -118,7 +118,7 @@ public class ChooseTurnipListPref extends ListPreference {
 
     private void showDeleteConfirmationDialog(String version) {
         new CustomDialog.Builder(getContext())
-                .setTitle(getString(R.string.pgw_settings_ctu_delete_title))
+                .setTitle(getContext(),getString(R.string.pgw_settings_ctu_delete_title))
                 .setMessage(getContext().getString(R.string.pgw_settings_ctu_delete_message, version))
                 .setConfirmListener(android.R.string.ok, customView -> {
                     boolean success = TurnipUtils.INSTANCE.deleteTurnipDriver(version);

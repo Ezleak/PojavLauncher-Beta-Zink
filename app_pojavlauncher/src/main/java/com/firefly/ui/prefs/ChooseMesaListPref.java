@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 
-import com.firefly.dialog.CustomDialog;
+import com.firefly.ui.dialog.CustomDialog;
 import com.firefly.utils.MesaUtils;
 
 import net.kdt.pojavlaunch.R;
@@ -136,7 +136,7 @@ public class ChooseMesaListPref extends ListPreference {
 
     private void showDeleteConfirmationDialog(String version) {
         new CustomDialog.Builder(getContext())
-                .setTitle(getString(R.string.preference_rendererexp_mesa_delete_title))
+                .setTitle(getContext().getString(R.string.preference_rendererexp_mesa_delete_title))
                 .setMessage(getContext().getString(R.string.preference_rendererexp_mesa_delete_message, version))
                 .setConfirmListener(android.R.string.ok, customView -> {
                     boolean success = MesaUtils.INSTANCE.deleteMesaLib(version);
