@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import net.kdt.pojavlaunch.Tools;
-import net.kdt.pojavlaunch.utils.
+import net.kdt.pojavlaunch.utils.DownloadUtils;
 
 import org.apache.commons.io.IOUtils;
 

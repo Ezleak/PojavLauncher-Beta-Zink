@@ -120,7 +120,7 @@ public class ChooseTurnipListPref extends ListPreference {
         new CustomDialog.Builder(getContext())
                 .setTitle(getString(R.string.pgw_settings_ctu_delete_title))
                 .setMessage(getContext().getString(R.string.pgw_settings_ctu_delete_message, version))
-                .setConfirmListener(R.string.alertdialog_done, customView -> {
+                .setConfirmListener(android.R.string.ok, customView -> {
                     boolean success = TurnipUtils.INSTANCE.deleteTurnipDriver(version);
                     if (success) {
                         Toast.makeText(getContext(), R.string.preference_rendererexp_mesa_deleted, Toast.LENGTH_SHORT).show();
@@ -130,8 +130,7 @@ public class ChooseTurnipListPref extends ListPreference {
                     }
                     return true;
                 })
-                .setCancelListener(R.string.alertdialog_cancel, customView -> true)
-                .setDraggable(true)
+                .setCancelListener(android.R.string.cancel, customView -> true)
                 .build()
                 .show();
     }

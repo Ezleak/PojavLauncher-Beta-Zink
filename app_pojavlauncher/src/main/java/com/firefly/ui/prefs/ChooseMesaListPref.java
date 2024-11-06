@@ -149,7 +149,6 @@ public class ChooseMesaListPref extends ListPreference {
                     return true;
                 })
                 .setCancelListener(android.R.string.cancel, customView -> true)
-                .setDraggable(true)
                 .build()
                 .show();
     }
