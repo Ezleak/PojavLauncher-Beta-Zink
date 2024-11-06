@@ -2,7 +2,10 @@ package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -60,8 +63,6 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        AlertDialog dialog = builder.create();
-
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.HORIZONTAL);
         layout.setPadding(50, 20, 50, 20);
@@ -69,6 +70,23 @@ public class ChooseMesaListPref extends ListPreference {
 
         Button importButton = new Button(getContext());
         importButton.setText(R.string.pgw_settings_custom_turnip_creat);
+
+        Button downloadButton = new Button(getContext());
+        downloadButton.setText(R.string.preference_extra_mesa_download);
+
+        layout.addView(importButton);
+        layout.addView(downloadButton);
+        builder.setView(layout);
+
+        AlertDialog dialog = builder.create();
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (screenHeight * 0.7));
+
+        dialog.show();
+
         importButton.setOnClickListener(v -> {
             if (importClickListener != null) {
                 importClickListener.onClick(v);
@@ -76,20 +94,12 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        Button downloadButton = new Button(getContext());
-        downloadButton.setText(R.string.preference_extra_mesa_download);
         downloadButton.setOnClickListener(v -> {
             if (downloadClickListener != null) {
                 downloadClickListener.onClick(v);
             }
             dialog.dismiss();
         });
-
-        layout.addView(importButton);
-        layout.addView(downloadButton);
-        builder.setView(layout);
-
-        dialog.show();
 
         ListView listView = dialog.getListView();
         listView.setOnItemLongClickListener((adapterView, view, position, id) -> {
