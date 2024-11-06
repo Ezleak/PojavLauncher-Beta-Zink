@@ -43,30 +43,24 @@ public class ChooseMesaListPref extends ListPreference {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getDialogTitle());
 
+        LinearLayout mainLayout = new LinearLayout(getContext());
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setPadding(50, 20, 50, 20);
+
+        ListView listView = new ListView(getContext());
         CharSequence[] entriesCharSequence = getEntries();
         String[] entries = new String[entriesCharSequence.length];
         for (int i = 0; i < entriesCharSequence.length; i++) {
             entries[i] = entriesCharSequence[i].toString();
         }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, entries);
+        listView.setAdapter(adapter);
 
-        builder.setItems(entries, (dialog, which) -> {
-            String newValue = getEntryValues()[which].toString();
-            if (!newValue.equals(initialValue)) {
-                if (getOnPreferenceChangeListener() != null) {
-                    if (getOnPreferenceChangeListener().onPreferenceChange(this, newValue)) {
-                        setValue(newValue);
-                    }
-                } else {
-                    setValue(newValue);
-                }
-            }
-            dialog.dismiss();
-        });
+        mainLayout.addView(listView, new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
 
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.HORIZONTAL);
-        layout.setPadding(50, 20, 50, 20);
-        layout.setGravity(android.view.Gravity.CENTER);
+        LinearLayout buttonLayout = new LinearLayout(getContext());
+        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        buttonLayout.setGravity(android.view.Gravity.CENTER);
 
         Button importButton = new Button(getContext());
         importButton.setText(R.string.pgw_settings_custom_turnip_creat);
@@ -74,11 +68,16 @@ public class ChooseMesaListPref extends ListPreference {
         Button downloadButton = new Button(getContext());
         downloadButton.setText(R.string.preference_extra_mesa_download);
 
-        layout.addView(importButton);
-        layout.addView(downloadButton);
-        builder.setView(layout);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+        buttonLayout.addView(importButton, buttonParams);
+        buttonLayout.addView(downloadButton, buttonParams);
+
+        mainLayout.addView(buttonLayout);
+
+        builder.setView(mainLayout);
 
         AlertDialog dialog = builder.create();
+    
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -101,7 +100,20 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
         });
 
-        ListView listView = dialog.getListView();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            String newValue = getEntryValues()[position].toString();
+            if (!newValue.equals(initialValue)) {
+                if (getOnPreferenceChangeListener() != null) {
+                    if (getOnPreferenceChangeListener().onPreferenceChange(this, newValue)) {
+                        setValue(newValue);
+                    }
+                } else {
+                    setValue(newValue);
+                }
+            }
+            dialog.dismiss();
+        });
+
         listView.setOnItemLongClickListener((adapterView, view, position, id) -> {
             String selectedVersion = getEntryValues()[position].toString();
             if (defaultLibs.contains(selectedVersion)) {
@@ -112,7 +124,6 @@ public class ChooseMesaListPref extends ListPreference {
             dialog.dismiss();
             return true;
         });
-
     }
 
     @Override
