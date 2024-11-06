@@ -2,8 +2,6 @@ package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -57,7 +55,7 @@ public class ChooseMesaListPref extends ListPreference {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, entries);
         listView.setAdapter(adapter);
 
-        mainLayout.addView(listView, new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
+        mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
 
         LinearLayout buttonLayout = new LinearLayout(getContext());
         buttonLayout.setOrientation(LinearLayout.HORIZONTAL);

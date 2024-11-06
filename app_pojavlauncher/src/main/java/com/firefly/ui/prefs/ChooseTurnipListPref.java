@@ -2,8 +2,6 @@ package com.firefly.ui.prefs;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,50 +38,60 @@ public class ChooseTurnipListPref extends ListPreference {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getDialogTitle());
 
+        LinearLayout mainLayout = new LinearLayout(getContext());
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setPadding(50, 20, 50, 20);
+
+        ListView listView = new ListView(getContext());
         CharSequence[] entriesCharSequence = getEntries();
         String[] entries = new String[entriesCharSequence.length];
         for (int i = 0; i < entriesCharSequence.length; i++) {
             entries[i] = entriesCharSequence[i].toString();
         }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, entries);
+        listView.setAdapter(adapter);
 
-        builder.setItems(entries, (dialog, which) -> {
-            String newValue = getEntryValues()[which].toString();
-            if (preferenceChangeListener != null) {
-                if (preferenceChangeListener.onPreferenceChange(this, newValue)) {
-                    setValue(newValue);
-                }
-            } else {
-                setValue(newValue);
-            }
-            dialog.dismiss();
-        });
+        mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
 
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        
-        Button createButton = new Button(getContext());
-        createButton.setText(R.string.pgw_settings_custom_turnip_creat);
-        layout.addView(createButton);
-        builder.setView(layout);
+        LinearLayout buttonLayout = new LinearLayout(getContext());
+        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        buttonLayout.setGravity(android.view.Gravity.CENTER);
+
+        Button importButton = new Button(getContext());
+        importButton.setText(R.string.pgw_settings_custom_turnip_creat);
+
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+        buttonLayout.addView(importButton, buttonParams);
+        buttonLayout.addView(downloadButton, buttonParams);
+
+        mainLayout.addView(buttonLayout);
+
+        builder.setView(mainLayout);
 
         AlertDialog dialog = builder.create();
-
-        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenHeight = displayMetrics.heightPixels;
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (screenHeight * 0.7));
-
         dialog.show();
 
-        createButton.setOnClickListener(view -> {
-            if (importButronListener != null) {
-                importButronListener.onClick(view);
+        importButton.setOnClickListener(v -> {
+            if (importButtonListener != null) {
+                importButtonListener.onClick(v);
             }
             dialog.dismiss();
         });
 
-        ListView listView = dialog.getListView();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            String newValue = getEntryValues()[position].toString();
+            if (!newValue.equals(initialValue)) {
+                if (getOnPreferenceChangeListener() != null) {
+                    if (getOnPreferenceChangeListener().onPreferenceChange(this, newValue)) {
+                        setValue(newValue);
+                    }
+                } else {
+                    setValue(newValue);
+                }
+            }
+            dialog.dismiss();
+        });
+
         listView.setOnItemLongClickListener((adapterView, view, position, id) -> {
             String selectedVersion = getEntryValues()[position].toString();
             if (defaultLibs.contains(selectedVersion)) {
