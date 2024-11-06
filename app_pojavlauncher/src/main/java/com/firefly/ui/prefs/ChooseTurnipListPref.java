@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,7 +23,7 @@ import java.util.List;
 public class ChooseTurnipListPref extends ListPreference {
     private List<String> defaultLibs;
     private OnPreferenceChangeListener preferenceChangeListener;
-    private View.OnClickListener importButronListener;
+    private View.OnClickListener importButtonListener;
 
     public ChooseTurnipListPref(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +36,7 @@ public class ChooseTurnipListPref extends ListPreference {
 
     @Override
     protected void onClick() {
+        String initialValue = getValue();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getDialogTitle());
 
@@ -62,7 +64,6 @@ public class ChooseTurnipListPref extends ListPreference {
 
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
         buttonLayout.addView(importButton, buttonParams);
-        buttonLayout.addView(downloadButton, buttonParams);
 
         mainLayout.addView(buttonLayout);
 
@@ -111,7 +112,7 @@ public class ChooseTurnipListPref extends ListPreference {
     }
 
     public void setImportButton(String buttonText, View.OnClickListener listener) {
-        this.importButronListener = listener;
+        this.importButtonListener = listener;
     }
 
     private void showDeleteConfirmationDialog(String version) {
