@@ -71,7 +71,7 @@ public class PGWTools {
         return isAdreno;
     }
 
-    public boolean isELFFile(InputStream inputStream) {
+    public static boolean isELFFile(InputStream inputStream) {
         try {
             byte[] elfMagic = new byte[4];
             int bytesRead = inputStream.read(elfMagic);
