@@ -198,7 +198,7 @@ public class JREUtils {
         LD_LIBRARY_PATH = ldLibraryPath.toString();
     }
 
-    public static void setJavaEnv(String jreHome) throws Throwable {
+    private static void setJavaEnv(String jreHome) throws Throwable {
         Map<String, String> envMap = new ArrayMap<>();
 
         envMap.put("POJAV_NATIVEDIR", NATIVE_LIB_DIR);
@@ -248,7 +248,7 @@ public class JREUtils {
         setLdLibraryPath(jvmLibraryPath + ":" + LD_LIBRARY_PATH);
     }
 
-    public static void setRendererEnv() throws Throwable {
+    private static void setRendererEnv() throws Throwable {
         Map<String, String> envMap = new ArrayMap<>();
 
         if (LOCAL_RENDERER.startsWith("opengles2")) {
@@ -312,9 +312,6 @@ public class JREUtils {
         }
 
         if (LOCAL_RENDERER.equals("mesa_3d")) {
-            envMap.put("MESA_LIBRARY", loadGraphicsLibrary());
-            envMap.put("LOCAL_DRIVER_MODEL", DRIVER_MODEL);
-
             if (PREF_EXP_ENABLE_SPECIFIC) {
                 switch (DRIVER_MODEL) {
                     case "driver_zink":
@@ -368,6 +365,10 @@ public class JREUtils {
                 if (MESA_LIBS.equals("default"))
                     envMap.put("PAN_MESA_DEBUG", "trace");
             }
+
+            envMap.put("MESA_LIBRARY", loadGraphicsLibrary());
+            envMap.put("LOCAL_DRIVER_MODEL", DRIVER_MODEL);
+            envMap.put("POJAV_BETA_RENDERER", "mesa_3d");
         }
 
         if (!envMap.containsKey("LIBGL_ES")) {
@@ -386,18 +387,6 @@ public class JREUtils {
             }
         }
 
-        File customEnvFile = new File(ProfilePathManager.getCurrentPath(), "custom_env.txt");
-        if (customEnvFile.exists() && customEnvFile.isFile()) {
-            BufferedReader reader = new BufferedReader(new FileReader(customEnvFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Not use split() as only split first one
-                int index = line.indexOf("=");
-                envMap.put(line.substring(0, index), line.substring(index + 1));
-            }
-            reader.close();
-        }
-
         for (Map.Entry<String, String> env : envMap.entrySet()) {
             Logger.appendToLog("Added custom env: " + env.getKey() + "=" + env.getValue());
             try {
@@ -409,7 +398,30 @@ public class JREUtils {
 
     }
 
-    private static void checkAndUsedJSPH(final Runtime runtime) {
+    private static void setCustomEnv() throws Throwable {
+        File customEnvFile = new File(ProfilePathManager.getCurrentPath(), "custom_env.txt");
+        if (customEnvFile.exists() && customEnvFile.isFile()) {
+            BufferedReader reader = new BufferedReader(new FileReader(customEnvFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Not use split() as only split first one
+                int index = line.indexOf("=");
+                envMap.put(line.substring(0, index), line.substring(index + 1));
+            }
+            reader.close();
+        } else return;
+
+        for (Map.Entry<String, String> env : envMap.entrySet()) {
+            Logger.appendToLog("Added custom env: " + env.getKey() + "=" + env.getValue());
+            try {
+                Os.setenv(env.getKey(), env.getValue(), true);
+            } catch (NullPointerException exception) {
+                Log.e("JREUtils", exception.toString());
+            }
+        }
+    }
+
+    private static void checkAndUsedJSPH(final Runtime runtime) throws Throwable {
         boolean onUseJSPH = runtime.javaVersion > 11;
         if (!onUseJSPH) return;
         File dir = new File(NATIVE_LIB_DIR);
@@ -447,6 +459,7 @@ public class JREUtils {
         JREUtils.relocateLibPath(runtime, runtimeHome);
 
         setJavaEnv(runtimeHome);
+        setCustomEnv();
         checkAndUsedJSPH(runtime);
         if (TURNIP_LIBS != null) loadCustomTurnip();
         if (LOCAL_RENDERER != null) setRendererEnv();
