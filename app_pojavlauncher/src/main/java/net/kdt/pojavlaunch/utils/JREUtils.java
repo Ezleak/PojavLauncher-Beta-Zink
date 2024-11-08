@@ -399,6 +399,7 @@ public class JREUtils {
     }
 
     private static void setCustomEnv() throws Throwable {
+        Map<String, String> envMap = new ArrayMap<>();
         File customEnvFile = new File(ProfilePathManager.getCurrentPath(), "custom_env.txt");
         if (customEnvFile.exists() && customEnvFile.isFile()) {
             BufferedReader reader = new BufferedReader(new FileReader(customEnvFile));
