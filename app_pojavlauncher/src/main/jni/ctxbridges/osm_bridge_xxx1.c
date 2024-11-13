@@ -13,7 +13,7 @@ void* mbuffer;
 
 
 static const char* osm_LogTag = "OSMBridge";
-static __thread osm_render_window_t* currentBundle;
+static __thread xxx1_osm_render_window_t* currentBundle;
 static char xxx1_no_render_buffer[4];
 static bool hasSetNoRendererBuffer = false;
 
@@ -25,17 +25,17 @@ bool xxx1_osm_init() {
     return true;
 }
 
-osm_render_window_t* xxx1_osm_get_current() {
+xxx1_osm_render_window_t* xxx1_osm_get_current() {
     return currentBundle;
 }
 
-osm_render_window_t* xxx1_osm_init_context(osm_render_window_t* share) {
+xxx1_osm_render_window_t* xxx1_osm_init_context(xxx1_osm_render_window_t* share) {
 
-    osm_render_window_t* render_window = malloc(sizeof(osm_render_window_t));
+    xxx1_osm_render_window_t* render_window = malloc(sizeof(xxx1_osm_render_window_t));
     if (render_window == NULL) return NULL;
 
     printf("%s: generating context\n", osm_LogTag);
-    memset(render_window, 0, sizeof(osm_render_window_t));
+    memset(render_window, 0, sizeof(xxx1_osm_render_window_t));
     OSMesaContext osmesa_share = NULL;
     if (share != NULL) osmesa_share = share->context;
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
@@ -59,7 +59,7 @@ void xxx1_osm_set_no_render_buffer(ANativeWindow_Buffer* buffer) {
     buffer->stride = 0;
 }
 
-void xxx1_osm_swap_surfaces(osm_render_window_t* bundle) {
+void xxx1_osm_swap_surfaces(xxx1_osm_render_window_t* bundle) {
 
     if (bundle->nativeSurface != NULL && bundle->newNativeSurface != bundle->nativeSurface)
     {
@@ -129,7 +129,7 @@ void xxx1_osm_apply_current_ll(ANativeWindow_Buffer* buffer) {
     currentBundle->last_stride = buffer->stride;
 }
 
-void xxx1_osm_make_current(osm_render_window_t* bundle) {
+void xxx1_osm_make_current(xxx1_osm_render_window_t* bundle) {
 
     if (bundle == NULL)
     {

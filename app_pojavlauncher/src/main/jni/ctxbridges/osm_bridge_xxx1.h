@@ -16,12 +16,12 @@ typedef struct {
     int32_t last_stride;
     bool disable_rendering;
     OSMesaContext context;
-} osm_render_window_t;
+} xxx1_osm_render_window_t;
 
 bool xxx1_osm_init();
-osm_render_window_t* xxx1_osm_get_current();
-osm_render_window_t* xxx1_osm_init_context(osm_render_window_t* share);
-void xxx1_osm_make_current(osm_render_window_t* bundle);
+xxx1_osm_render_window_t* xxx1_osm_get_current();
+xxx1_osm_render_window_t* xxx1_osm_init_context(xxx1_osm_render_window_t* share);
+void xxx1_osm_make_current(xxx1_osm_render_window_t* bundle);
 void xxx1_osm_swap_buffers();
 void xxx1_osm_setup_window();
 void xxx1_osm_swap_interval(int swapInterval);
