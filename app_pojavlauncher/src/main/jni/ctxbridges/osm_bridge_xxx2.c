@@ -15,6 +15,8 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
+ANativeWindow_Buffer buf;
+int32_t stride;
 void *abuffer;
 
 void *xxx2OsmGetCurrentContext() {

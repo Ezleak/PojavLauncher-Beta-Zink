@@ -16,7 +16,4 @@ void xxx2OsmMakeCurrent(void* window);
 void* xxx2OsmCreateContext(void* contextSrc);
 void xxx2OsmSwapInterval(int interval);
 
-ANativeWindow_Buffer buf;
-int32_t stride;
-
 #endif //OSM_BRIDGE_XXX2_H
