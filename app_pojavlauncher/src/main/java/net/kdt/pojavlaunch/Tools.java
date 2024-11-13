@@ -1303,9 +1303,11 @@ public final class Tools {
         String[] defaultNames = resources.getStringArray(R.array.config_bridge_names);
         List<String> Ids = new ArrayList<>(defaultIds.length);
         List<String> Names = new ArrayList<>(defaultNames.length);
-        Ids.add(defaultIds[i]);
-        Names.add(defaultNames[i]);
-        sCompatibleConfigBridge = new RenderersList(Ids, Names.toArray(new String[0]));
+        for (int i = 0; i < defaultIds.length; i++) {
+            Ids.add(defaultIds[i]);
+            Names.add(defaultNames[i]);
+        }
+        sCompatibleConfigBridge = new ConfigBridgeList(Ids, Names.toArray(new String[0]));
         return sCompatibleConfigBridge;
     }
 
