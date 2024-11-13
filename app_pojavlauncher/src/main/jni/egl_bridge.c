@@ -31,9 +31,7 @@
 #include "ctxbridges/gl_bridge.h"
 #include "ctxbridges/bridge_tbl.h"
 #include "ctxbridges/osm_bridge.h"
-#include "ctxbridges/spare_bridge.h"
-#include "ctxbridges/spare_osm_bridge.h"
-#include "ctxbridges/spare_renderer_config.h"
+#include "ctxbridges/osm_bridge_xxx1.h"
 #include "ctxbridges/renderer_config.h"
 #include "ctxbridges/virgl_bridge.h"
 #include "driver_helper/nsbypass.h"
@@ -75,9 +73,39 @@ EXTERNAL_API void pojavTerminate() {
     }
 }
 
-int SpareBridge() {
-    if (getenv("POJAV_SPARE_BRIDGE") != NULL) return 1;
-    return 0;
+void ConfigBridgeTbl() {
+    const char* bridge_tbl = getenv("POJAV_CONFIG_BRIDGE");
+    if (bridge_tbl == NULL)
+    {
+        pojav_environ->config_bridge = BRIDGE_TBL_DEFAULT;
+        return;
+    }
+    
+    struct {
+        const char* key;
+        int value;
+    } bridge_map[] = {
+        {"xxx1", BRIDGE_TBL_XXX1},
+        {"xxx2", BRIDGE_TBL_XXX2},
+        {"xxx3", BRIDGE_TBL_XXX3},
+        {"xxx4", BRIDGE_TBL_XXX4},
+    };
+    
+    int hasSelected = 0;
+    for (int i = 0; i < sizeof(bridge_map) / sizeof(bridge_map[0]); ++i)
+    {
+        if (!strcmp(bridge_tbl, bridge_map[i].key))
+        {
+            pojav_environ->config_bridge = bridge_map[i].value;
+            hasSelected = 1;
+            break;
+        }
+    }
+    if (hasSelected == 0)
+    {
+        printf("Config Bridge: Config not found, using default config\n");
+        pojav_environ->config_bridge = BRIDGE_TBL_DEFAULT;
+    }
 }
 
 int SpareBuffer() {
@@ -89,13 +117,10 @@ JNIEXPORT void JNICALL
 Java_net_kdt_pojavlaunch_utils_JREUtils_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
     pojav_environ->pojavWindow = ANativeWindow_fromSurface(env, surface);
 
-    if (SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+    if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
         gl_setup_window();
 
     if (br_setup_window) br_setup_window();
-
-    // pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF
-    if (spare_setup_window) spare_setup_window();
 
 }
 
@@ -110,11 +135,8 @@ don't touch the code here
 */
 EXTERNAL_API void* pojavGetCurrentContext() {
 
-    if (SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+    if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
         return (void *)eglGetCurrentContext_p();
-
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
-        return spare_get_current();
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL)
         return virglGetCurrentContext();
@@ -147,12 +169,30 @@ void load_vulkan() {
 }
 
 void renderer_load_config() {
-    if(!SpareBridge()) {
+    ConfigBridgeTbl();
+    if (pojav_environ->config_bridge == 0)
+    {
         pojav_environ->config_renderer = RENDERER_VK_ZINK;
         set_osm_bridge_tbl();
-    } else {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK_PREF;
-        spare_osm_bridge();
+        return;
+    }
+    switch (pojav_environ->config_bridge) {
+        case BRIDGE_TBL_XXX1: {
+            osm_bridge_xxx1();
+            pojav_environ->config_renderer = RENDERER_VK_ZINK_PREF;
+        } break;
+        case BRIDGE_TBL_XXX2:
+            // Nothing to do here
+            break;
+        case BRIDGE_TBL_XXX3:
+            // Nothing to do here
+            break;
+        case BRIDGE_TBL_XXX4:
+            // Nothing to do here
+            break;
+        default:
+            set_osm_bridge_tbl();
+            break;
     }
 }
 
@@ -172,8 +212,7 @@ int pojavInitOpenGL() {
     if (!strncmp("opengles", renderer, 8))
     {
         pojav_environ->config_renderer = RENDERER_GL4ES;
-        setenv("MESA_LOADER_DRIVER_OVERRIDE", "zink", 1);
-        if (!SpareBridge()) set_gl_bridge_tbl();
+        if (pojav_environ->config_bridge == 0) set_gl_bridge_tbl();
     }
 
     if (!strcmp(renderer, "mesa_3d"))
@@ -182,6 +221,7 @@ int pojavInitOpenGL() {
         if (!strcmp(ldrivermodel, "driver_zink"))
         {
             setenv("GALLIUM_DRIVER", "zink", 1);
+            setenv("MESA_LOADER_DRIVER_OVERRIDE", "zink", 1);
             renderer_load_config();
             load_vulkan();
         }
@@ -233,7 +273,7 @@ int pojavInitOpenGL() {
 
     if (pojav_environ->config_renderer == RENDERER_GL4ES)
     {
-        if (SpareBridge())
+        if (pojav_environ->config_bridge != 0)
         {
             if (gl_init()) gl_setup_window();
         } else {
@@ -242,7 +282,7 @@ int pojavInitOpenGL() {
     }
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
-        if (spare_init()) spare_setup_window();
+        if (br_init()) br_setup_window();
 
     return 0;
 }
@@ -278,7 +318,7 @@ EXTERNAL_API void pojavSwapBuffers() {
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK
      || pojav_environ->config_renderer == RENDERER_GL4ES)
     {
-        if (SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+        if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
             gl_swap_buffers();
         else br_swap_buffers();
     }
@@ -287,7 +327,7 @@ EXTERNAL_API void pojavSwapBuffers() {
         virglSwapBuffers();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
-        spare_swap_buffers();
+        br_swap_buffers();
 }
 
 EXTERNAL_API void pojavMakeCurrent(void* window) {
@@ -296,13 +336,13 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK
      || pojav_environ->config_renderer == RENDERER_GL4ES)
     {
-        if(SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+        if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
             gl_make_current((gl_render_window_t*)window);
         else br_make_current((basic_render_window_t*)window);
     }
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
-        spare_make_current((basic_render_window_t*)window);
+        br_make_current((basic_render_window_t*)window);
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL)
         virglMakeCurrent(window);
@@ -313,11 +353,8 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     if (pojav_environ->config_renderer == RENDERER_VULKAN)
         return (void *) pojav_environ->pojavWindow;
 
-    if (SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+    if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
         return gl_init_context(contextSrc);
-
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
-        return spare_init_context((basic_render_window_t*)contextSrc);
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL)
         return virglCreateContext(contextSrc);
@@ -331,7 +368,7 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
     // The code below still uses the env var because
     // 1. it's easier to do that
     // 2. it won't break if something will try to load vulkan and osmesa simultaneously
-    if(getenv("VULKAN_PTR") == NULL) load_vulkan();
+    if (getenv("VULKAN_PTR") == NULL) load_vulkan();
     return strtoul(getenv("VULKAN_PTR"), NULL, 0x10);
 }
 
@@ -376,7 +413,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
     if(pojav_environ->config_renderer == RENDERER_VK_ZINK
      || pojav_environ->config_renderer == RENDERER_GL4ES)
     {
-        if(SpareBridge() && pojav_environ->config_renderer == RENDERER_GL4ES)
+        if (pojav_environ->config_bridge != 0 && pojav_environ->config_renderer == RENDERER_GL4ES)
             gl_swap_interval(interval);
         else br_swap_interval(interval);
     }
@@ -386,7 +423,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
     {
-        spare_swap_interval(interval);
+        br_swap_interval(interval);
         printf("eglSwapInterval: NOT IMPLEMENTED YET!\n");
         // Nothing to do here
     }

@@ -2,6 +2,7 @@ package net.kdt.pojavlaunch.utils;
 
 import static net.kdt.pojavlaunch.Architecture.ARCH_X86;
 import static net.kdt.pojavlaunch.Architecture.is64BitsDevice;
+import static net.kdt.pojavlaunch.Tools.CONFIG_BRIDGE;
 import static net.kdt.pojavlaunch.Tools.DRIVER_MODEL;
 import static net.kdt.pojavlaunch.Tools.LOADER_OVERRIDE;
 import static net.kdt.pojavlaunch.Tools.LOCAL_RENDERER;
@@ -211,6 +212,8 @@ public class JREUtils {
         envMap.put("AWTSTUB_WIDTH", Integer.toString(CallbackBridge.windowWidth > 0 ? CallbackBridge.windowWidth : CallbackBridge.physicalWidth));
         envMap.put("AWTSTUB_HEIGHT", Integer.toString(CallbackBridge.windowHeight > 0 ? CallbackBridge.windowHeight : CallbackBridge.physicalHeight));
 
+        if (Tools.CONFIG_BRIDGE != null)
+            envMap.put("POJAV_CONFIG_BRIDGE", Tools.CONFIG_BRIDGE);
         if (PREF_BIG_CORE_AFFINITY)
             envMap.put("POJAV_BIG_CORE_AFFINITY", "1");
         if (PREF_DUMP_SHADERS)
@@ -262,11 +265,6 @@ public class JREUtils {
         if (LOCAL_RENDERER.equals("opengles3_ltw")) {
             envMap.put("LIBGL_ES", "3");
             envMap.put("POJAVEXEC_EGL", "libltw.so");
-        }
-
-        if (LOCAL_RENDERER.equals("opengles?_vkgl")) {
-            envMap.put("LIBGL_ES", "3");
-            envMap.put("POJAVEXEC_EGL", "libVKGL32_EGL.so");
         }
 
         if (!LOCAL_RENDERER.startsWith("opengles")) {
@@ -690,9 +688,6 @@ public class JREUtils {
                     break;
                 case "opengles3_ltw":
                     renderLibrary = "libltw.so";
-                    break;
-                case "opengles?_vkgl":
-                    renderLibrary = "libVKGL32.so";
                     break;
                 default:
                     Log.w("RENDER_LIBRARY", "No renderer selected, defaulting to opengles2");
