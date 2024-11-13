@@ -69,7 +69,8 @@ EXTERNAL_API void pojavTerminate() {
             potatoBridge.eglSurface = EGL_NO_SURFACE;
         } break;
         case RENDERER_VK_ZINK:
-        case RENDERER_VK_ZINK_PREF:
+        case RENDERER_VK_ZINK_XXX1:
+        case RENDERER_VK_ZINK_XXX2;
             break;
     }
 }
@@ -159,7 +160,8 @@ void load_vulkan() {
     // the loader does not support below that
 #ifdef ADRENO_POSSIBLE
         void* result = load_turnip_vulkan();
-        if(result != NULL) {
+        if (result != NULL)
+        {
             printf("AdrenoSupp: Loaded Turnip, loader address: %p\n", result);
             set_vulkan_ptr(result);
             return;
@@ -183,7 +185,7 @@ void renderer_load_config() {
     printf("Config Bridge: Config = %p\n", pojav_environ->config_bridge);
     switch (pojav_environ->config_bridge) {
         case BRIDGE_TBL_XXX1: {
-            pojav_environ->config_renderer = RENDERER_VK_ZINK_PREF;
+            pojav_environ->config_renderer = RENDERER_VK_ZINK_XXX1;
             osm_bridge_xxx1();
         } break;
         case BRIDGE_TBL_XXX2: {
@@ -290,7 +292,7 @@ int pojavInitOpenGL() {
         }
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
+    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
         if (br_init()) br_setup_window();
 
     return 0;
@@ -338,7 +340,7 @@ EXTERNAL_API void pojavSwapBuffers() {
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2)
         xxx2OsmSwapBuffers();
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
+    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
         br_swap_buffers();
 }
 
@@ -353,7 +355,7 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
         else br_make_current((basic_render_window_t*)window);
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
+    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
         br_make_current((basic_render_window_t*)window);
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL)
@@ -393,7 +395,7 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
 #ifdef FRAME_BUFFER_SUPPOST
 EXTERNAL_API JNIEXPORT void JNICALL
 Java_org_lwjgl_opengl_GL_nativeRegalMakeCurrent(JNIEnv *env, jclass clazz) {
-    if (SpareBuffer() && (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF
+    if (SpareBuffer() && (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1
      || pojav_environ->config_renderer == RENDERER_VIRGL
      || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2))
     {
@@ -412,7 +414,7 @@ Java_org_lwjgl_opengl_GL_getGraphicsBufferAddr(JNIEnv *env, jobject thiz) {
     if (SpareBuffer() && pojav_environ->config_renderer == RENDERER_VIRGL)
     {
         return &gbuffer;
-    } else if (SpareBuffer() && pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF) {
+    } else if (SpareBuffer() && pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1) {
         return &mbuffer;
     } else if (SpareBuffer() && pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2) {
         return &abuffer;
@@ -421,7 +423,7 @@ Java_org_lwjgl_opengl_GL_getGraphicsBufferAddr(JNIEnv *env, jobject thiz) {
 
 EXTERNAL_API JNIEXPORT jintArray JNICALL
 Java_org_lwjgl_opengl_GL_getNativeWidthHeight(JNIEnv *env, jobject thiz) {
-    if (SpareBuffer() && (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF
+    if (SpareBuffer() && (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1
      || pojav_environ->config_renderer == RENDERER_VIRGL
      || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2))
     {
@@ -448,7 +450,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2)
         xxx2OsmSwapInterval(interval);
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF)
+    if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
     {
         br_swap_interval(interval);
         printf("eglSwapInterval: NOT IMPLEMENTED YET!\n");

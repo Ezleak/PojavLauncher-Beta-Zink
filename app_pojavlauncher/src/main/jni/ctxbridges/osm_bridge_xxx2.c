@@ -82,12 +82,8 @@ void xxx2OsmSwapInterval(int interval) {
 }
 
 int xxx2OsmInit() {
-
-    if (OSMesaCreateContext_p == NULL)
-    {
-        printf("OSMDroid: %s\n",dlerror());
+    if (pojav_environ->config_bridge != BRIDGE_TBL_XXX2)
         return 0;
-    }
 
     if (SpareBuffer())
     {
