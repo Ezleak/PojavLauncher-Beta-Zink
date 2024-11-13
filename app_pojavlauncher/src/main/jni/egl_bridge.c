@@ -211,6 +211,7 @@ int pojavInitOpenGL() {
 
     if (!strncmp("opengles", renderer, 8))
     {
+        ConfigBridgeTbl();
         pojav_environ->config_renderer = RENDERER_GL4ES;
         if (pojav_environ->config_bridge == 0) set_gl_bridge_tbl();
     }
@@ -275,6 +276,7 @@ int pojavInitOpenGL() {
     {
         if (pojav_environ->config_bridge != 0)
         {
+            printf("Config Bridge: Config= %p\n", pojav_environ->config_bridge);
             if (gl_init()) gl_setup_window();
         } else {
             if (br_init()) br_setup_window();
