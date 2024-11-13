@@ -10,6 +10,7 @@
 #define RENDERER_VULKAN 4
 #define RENDERER_VK_WARLIP 5
 #define RENDERER_VK_ZINK_PREF 6
+#define RENDERER_VK_ZINK_XXX2 7
 
 #define BRIDGE_TBL_DEFAULT 0
 #define BRIDGE_TBL_XXX1 1
@@ -46,8 +47,10 @@ int SpareBuffer();
 #ifndef FRAME_BUFFER_SUPPOST
 #define FRAME_BUFFER_SUPPOST
 
+extern void *abuffer;
 extern void *gbuffer;
 extern void *mbuffer;
+
 
 #endif
 

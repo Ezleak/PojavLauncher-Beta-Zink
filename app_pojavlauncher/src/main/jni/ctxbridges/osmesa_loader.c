@@ -28,7 +28,8 @@ void dlsym_OSMesa() {
     char* mesa_library = getenv("MESA_LIBRARY");
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK
      || pojav_environ->config_renderer == RENDERER_VK_ZINK_PREF
-     || pojav_environ->config_renderer == RENDERER_VIRGL)
+     || pojav_environ->config_renderer == RENDERER_VIRGL
+     || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2)
     {
         if (strncmp(mesa_library, "/data", 5) == 0)
         {
