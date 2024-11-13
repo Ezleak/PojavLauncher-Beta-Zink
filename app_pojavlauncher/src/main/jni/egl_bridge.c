@@ -70,7 +70,8 @@ EXTERNAL_API void pojavTerminate() {
         } break;
         case RENDERER_VK_ZINK:
         case RENDERER_VK_ZINK_XXX1:
-        case RENDERER_VK_ZINK_XXX2;
+        case RENDERER_VK_ZINK_XXX2:
+            // Nothing to do here
             break;
     }
 }
