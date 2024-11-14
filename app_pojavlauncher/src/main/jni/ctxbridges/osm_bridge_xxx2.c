@@ -34,6 +34,11 @@ void xxx2OsmSwapBuffers() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
+    if (!hasCleaned)
+    {
+        hasCleaned = true;
+        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+    }
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
     glFinish_p();
 
@@ -77,10 +82,8 @@ void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
     if (!hasCleaned)
     {
-        hasCleaned = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
     }
     xxx2OsmSwapBuffers();
 }
