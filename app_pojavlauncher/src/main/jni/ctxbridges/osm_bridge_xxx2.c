@@ -66,9 +66,7 @@ void xxx2OsmMakeCurrent(void *window) {
 
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
     ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
-
-    if (buf.stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
+    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
