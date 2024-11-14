@@ -34,7 +34,6 @@ void xxx2OsmSwapBuffers() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     glFinish_p();
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
 
@@ -42,6 +41,7 @@ void xxx2OsmSwapBuffers() {
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
 
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
 }
 
