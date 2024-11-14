@@ -46,8 +46,12 @@ void xxx2OsmSwapBuffers() {
 }
 
 void xxx2OsmMakeCurrent(void *window) {
+    if (hasCleaned)
+    {
+        xxx2OsmSwapBuffers();
+        return;
+    }
     printf("OSMDroid: making current\n");
-
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
