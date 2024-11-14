@@ -80,7 +80,6 @@ void xxx2OsmMakeCurrent(void *window) {
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
         // ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
     }
-    xxx2OsmSwapBuffers();
 }
 
 void *xxx2OsmCreateContext(void *contextSrc) {
