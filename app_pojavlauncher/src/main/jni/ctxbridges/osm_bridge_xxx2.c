@@ -18,8 +18,7 @@
 ANativeWindow_Buffer buf;
 int32_t stride;
 
-static bool swapFinish = false;
-static bool hasMakeCurrent = false;
+static bool hasCleaned = false;
 void *abuffer;
 
 void *xxx2OsmGetCurrentContext() {
@@ -37,13 +36,9 @@ void xxx2OsmSwapBuffers() {
 
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
 
-    if (swapFinish)
-    {
-        swapFinish = false;
-        glFinish_p();
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
-        ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
-    }
+    glFinish_p();
+    ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
 }
 
 void xxx2OsmMakeCurrent(void *window) {
@@ -66,21 +61,20 @@ void xxx2OsmMakeCurrent(void *window) {
                                    pojav_environ->savedWidth,
                                    pojav_environ->savedHeight);
 
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
-    if (!hasMakeCurrent)
+    if (!hasCleaned)
     {
-        hasMakeCurrent = true;
-        swapFinish = true;
+        hasCleaned = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-        xxx2OsmSwapBuffers();
     }
+    xxx2OsmSwapBuffers();
 }
 
 void *xxx2OsmCreateContext(void *contextSrc) {
