@@ -66,7 +66,7 @@ void xxx2OsmMakeCurrent(void *window) {
                                    pojav_environ->savedHeight);
 
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
-    // if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     if (buf.stride != stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
@@ -78,7 +78,7 @@ void xxx2OsmMakeCurrent(void *window) {
         hasCleaned = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-        // ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
     }
 }
 
