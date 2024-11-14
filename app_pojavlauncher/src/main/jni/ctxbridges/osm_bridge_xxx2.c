@@ -46,38 +46,38 @@ void xxx2OsmSwapBuffers() {
 }
 
 void xxx2OsmMakeCurrent(void *window) {
-    if (hasCleaned) return;
     printf("OSMDroid: making current\n");
+    OSMesaContext ctx = NULL;
+    if (hasCleaned)
+    {
+        ctx = OSMesaGetCurrentContext_p();
+    } else {
+        hasCleaned = true;
+        ctx = window;
+    }
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
-        OSMesaMakeCurrent_p((OSMesaContext)window,
-                                abuffer,
+        OSMesaMakeCurrent_p(ctx, abuffer,
                                 GL_UNSIGNED_BYTE,
                                 pojav_environ->savedWidth,
                                 pojav_environ->savedHeight);
     #else
         printf("[ERROR]: Macro FRAME_BUFFER_SUPPOST is undefined\n");
     #endif
-    } else OSMesaMakeCurrent_p((OSMesaContext)window,
-                                   setbuffer,
+    } else OSMesaMakeCurrent_p(ctx, setbuffer,
                                    GL_UNSIGNED_BYTE,
                                    pojav_environ->savedWidth,
                                    pojav_environ->savedHeight);
 
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
     ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
-    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
+    if (buf.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
-    if (!hasCleaned)
-    {
-        hasCleaned = true;
-        glClear_p(GL_COLOR_BUFFER_BIT);
-        glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-    }
     ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
 }
 
