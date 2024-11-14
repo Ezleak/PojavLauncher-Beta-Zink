@@ -34,11 +34,6 @@ void xxx2OsmSwapBuffers() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    if (!hasCleaned)
-    {
-        hasCleaned = true;
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
-    }
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
     glFinish_p();
 
@@ -71,12 +66,9 @@ void xxx2OsmMakeCurrent(void *window) {
                                    pojav_environ->savedHeight);
 
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
-    if (!hasCleaned)
-    {
-        ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
-        stride = buf.stride;
-    }
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
+    stride = buf.stride;
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
