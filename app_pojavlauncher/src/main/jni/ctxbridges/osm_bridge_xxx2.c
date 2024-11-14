@@ -19,7 +19,6 @@ ANativeWindow_Buffer buf;
 int32_t stride;
 
 static bool hasCleaned = false;
-static bool onSwap = false;
 void *abuffer;
 
 void *xxx2OsmGetCurrentContext() {
@@ -38,11 +37,7 @@ void xxx2OsmSwapBuffers() {
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
 
     glFinish_p();
-    if (onSwap)
-    {
-        onSwap = false;
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
-    }
+    ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
     ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
 }
 
@@ -66,7 +61,7 @@ void xxx2OsmMakeCurrent(void *window) {
                                    pojav_environ->savedWidth,
                                    pojav_environ->savedHeight);
 
-    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
@@ -76,7 +71,6 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasCleaned)
     {
         hasCleaned = true;
-        onSwap = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
     }
