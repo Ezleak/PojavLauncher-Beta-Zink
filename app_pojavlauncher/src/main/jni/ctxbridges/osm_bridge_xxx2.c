@@ -76,6 +76,7 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasCleaned)
     {
         hasCleaned = true;
+        onSwap = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
     }
