@@ -37,7 +37,6 @@ void xxx2OsmSwapBuffers() {
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
 
     glFinish_p();
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
 }
 
@@ -61,7 +60,7 @@ void xxx2OsmMakeCurrent(void *window) {
                                    pojav_environ->savedWidth,
                                    pojav_environ->savedHeight);
 
-    // ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf.stride);
     stride = buf.stride;
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
