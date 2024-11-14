@@ -38,17 +38,12 @@ void xxx2OsmSwapBuffers() {
     OSMesaMakeCurrent_p(ctx, buf.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
 
     glFinish_p();
-    if (!hasCleaned)
-    {
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
-        ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
-    }
     if (onSwap)
     {
         onSwap = false;
         ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
-        ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
     }
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
 }
 
 void xxx2OsmMakeCurrent(void *window) {
@@ -81,7 +76,6 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasCleaned)
     {
         hasCleaned = true;
-        onSwap = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
     }
