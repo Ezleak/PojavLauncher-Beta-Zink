@@ -44,9 +44,9 @@ void xxx2_osm_apply_current_l(ANativeWindow_Buffer* buf) {
         printf("Zink: attempted to swap buffers without context!");
 
     OSMesaMakeCurrent_p(ctx, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
-    if (buf->stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    stride = buf->stride;
+    if (buff.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
+    stride = buff.stride;
 }
 
 void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
@@ -67,9 +67,9 @@ void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
                                    buf->width,
                                    buf->height);
 
-    if (buf->stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    stride = buf->stride;
+    if (buff.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
+    stride = buff.stride;
 
 }
 
