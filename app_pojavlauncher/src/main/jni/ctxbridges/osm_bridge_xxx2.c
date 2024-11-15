@@ -15,6 +15,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
+ANativeWindow *nativeSurface;
 ANativeWindow_Buffer buff;
 int32_t stride;
 
@@ -74,16 +75,16 @@ void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
 }
 
 void xxx2OsmSwapBuffers() {
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
+    ANativeWindow_lock(nativeSurface, &buff, NULL);
     xxx2_osm_apply_current_l(&buff);
     glFinish_p();
-    ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+    ANativeWindow_unlockAndPost(nativeSurface);
 }
 
 void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
 
-    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
+    if (!hasCleaned) ANativeWindow_lock(nativeSurface, &buff, NULL);
 
     if (!hasSetNoRendererBuffer)
     {
@@ -101,7 +102,7 @@ void xxx2OsmMakeCurrent(void *window) {
         hasCleaned = true;
         glClear_p(GL_COLOR_BUFFER_BIT);
         glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-        ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+        ANativeWindow_unlockAndPost(nativeSurface);
     }
 }
 
@@ -110,6 +111,10 @@ void *xxx2OsmCreateContext(void *contextSrc) {
     void *ctx = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
     printf("OSMDroid: context=%p\n", ctx);
     return ctx;
+}
+
+void xxx2_osm_setup_window() {
+    nativeSurface = pojav_environ->pojavWindow;
 }
 
 void xxx2OsmSwapInterval(int interval) {
