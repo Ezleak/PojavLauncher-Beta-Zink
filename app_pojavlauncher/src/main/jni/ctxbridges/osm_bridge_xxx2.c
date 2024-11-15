@@ -20,16 +20,7 @@ ANativeWindow_Buffer* buf;
 int32_t stride;
 
 static bool hasCleaned = false;
-static bool hasSetNoRendererBuffer = false;
-static char xxx2_no_render_buffer[4];
 void *abuffer;
-
-void xxx2_osm_set_no_render_buffer() {
-    buf->bits = &xxx2_no_render_buffer;
-    buf->width = 1;
-    buf->height = 1;
-    buf->stride = 0;
-}
 
 void *xxx2OsmGetCurrentContext() {
     return (void *)OSMesaGetCurrentContext_p();
@@ -57,11 +48,6 @@ void xxx2OsmSwapBuffers() {
 
 void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
-    if (!hasSetNoRendererBuffer)
-    {
-        hasSetNoRendererBuffer = true;
-        xxx2_osm_set_no_render_buffer();
-    }
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
