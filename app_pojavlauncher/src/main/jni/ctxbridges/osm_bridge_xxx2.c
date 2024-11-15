@@ -84,7 +84,11 @@ void xxx2OsmSwapBuffers() {
 void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
 
-    if (!hasCleaned) ANativeWindow_lock(nativeSurface, &buff, NULL);
+    if (!hasCleaned)
+    {
+        nativeSurface = pojav_environ->pojavWindow;
+        ANativeWindow_lock(nativeSurface, &buff, NULL);
+    }
 
     if (!hasSetNoRendererBuffer)
     {
