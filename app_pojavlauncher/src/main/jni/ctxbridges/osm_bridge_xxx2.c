@@ -15,12 +15,21 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-// ANativeWindow_Buffer buff;
+ANativeWindow_Buffer buff;
 ANativeWindow_Buffer* buf;
 int32_t stride;
 
 static bool hasCleaned = false;
+static bool hasSetNoRendererBuffer = false;
+static char xxx2_no_render_buffer[4];
 void *abuffer;
+
+void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
+    buf->bits = &xxx2_no_render_buffer;
+    buf->width = 1;
+    buf->height = 1;
+    buf->stride = 0;
+}
 
 void *xxx2OsmGetCurrentContext() {
     return (void *)OSMesaGetCurrentContext_p();
@@ -35,7 +44,7 @@ void xxx2OsmSwapBuffers() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
     OSMesaMakeCurrent_p(ctx, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
     glFinish_p();
 
@@ -48,6 +57,11 @@ void xxx2OsmSwapBuffers() {
 
 void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
+    if (!hasSetNoRendererBuffer)
+    {
+        hasSetNoRendererBuffer = true;
+        xxx2_osm_set_no_render_buffer(buff);
+    }
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
@@ -66,7 +80,7 @@ void xxx2OsmMakeCurrent(void *window) {
                                    buf->height);
 
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
-    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buf, NULL);
+    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
 
     if (buf->stride != stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
