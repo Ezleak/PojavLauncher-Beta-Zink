@@ -67,9 +67,9 @@ void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
                                    buf->width,
                                    buf->height);
 
-    if (buf->stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    stride = buf->stride;
+    if (buff.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
+    stride = buff.stride;
 
 }
 
