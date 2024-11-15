@@ -67,9 +67,9 @@ void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
                                    buf->width,
                                    buf->height);
 
-    if (buff.stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
-    stride = buff.stride;
+    if (buf->stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
+    stride = buf->stride;
 
 }
 
@@ -83,7 +83,6 @@ void xxx2OsmSwapBuffers() {
 void xxx2OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
 
-    OSMesaPixelStore_p(OSMESA_Y_UP, 0);
     if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
 
     if (!hasSetNoRendererBuffer)
@@ -93,6 +92,7 @@ void xxx2OsmMakeCurrent(void *window) {
     }
 
     xxx2_osm_apply_current_ll(window, &buff);
+    OSMesaPixelStore_p(OSMESA_Y_UP, 0);
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
