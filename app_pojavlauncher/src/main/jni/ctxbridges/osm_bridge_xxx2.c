@@ -16,7 +16,6 @@
 #include "renderer_config.h"
 
 ANativeWindow_Buffer buff;
-ANativeWindow_Buffer* buf;
 int32_t stride;
 
 static bool hasCleaned = false;
@@ -39,29 +38,18 @@ void xxx2OsmloadSymbols() {
     dlsym_OSMesa();
 }
 
-void xxx2OsmSwapBuffers() {
+void xxx2_osm_apply_current_l(ANativeWindow_Buffer* buf) {
     OSMesaContext ctx = OSMesaGetCurrentContext_p();
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
     OSMesaMakeCurrent_p(ctx, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
-    glFinish_p();
-
     if (buf->stride != stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     stride = buf->stride;
-
-    ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
 }
 
-void xxx2OsmMakeCurrent(void *window) {
-    printf("OSMDroid: making current\n");
-    if (!hasSetNoRendererBuffer)
-    {
-        hasSetNoRendererBuffer = true;
-        xxx2_osm_set_no_render_buffer(&buff);
-    }
+void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
@@ -79,12 +67,32 @@ void xxx2OsmMakeCurrent(void *window) {
                                    buf->width,
                                    buf->height);
 
-    OSMesaPixelStore_p(OSMESA_Y_UP, 0);
-    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
-
     if (buf->stride != stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     stride = buf->stride;
+
+}
+
+void xxx2OsmSwapBuffers() {
+    ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
+    xxx2_osm_apply_current_l(&buff);
+    glFinish_p();
+    ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+}
+
+void xxx2OsmMakeCurrent(void *window) {
+    printf("OSMDroid: making current\n");
+
+    OSMesaPixelStore_p(OSMESA_Y_UP, 0);
+    if (!hasCleaned) ANativeWindow_lock(pojav_environ->pojavWindow, &buff, NULL);
+
+    if (!hasSetNoRendererBuffer)
+    {
+        hasSetNoRendererBuffer = true;
+        xxx2_osm_set_no_render_buffer(&buff);
+    }
+
+    xxx2_osm_apply_current_ll(window, &buff);
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
     printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
