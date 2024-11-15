@@ -60,7 +60,7 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasSetNoRendererBuffer)
     {
         hasSetNoRendererBuffer = true;
-        xxx2_osm_set_no_render_buffer(buff);
+        xxx2_osm_set_no_render_buffer(&buff);
     }
     if (SpareBuffer())
     {
