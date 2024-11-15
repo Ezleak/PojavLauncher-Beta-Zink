@@ -25,8 +25,8 @@ void *abuffer;
 
 void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->bits = &xxx2_no_render_buffer;
-    buf->width = 1;
-    buf->height = 1;
+    buf->width = pojav_environ->savedWidth;
+    buf->height = pojav_environ->savedHeight;
     buf->stride = 0;
 }
 
@@ -44,9 +44,9 @@ void xxx2_osm_apply_current_l(ANativeWindow_Buffer* buf) {
         printf("Zink: attempted to swap buffers without context!");
 
     OSMesaMakeCurrent_p(ctx, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
-    if (buff.stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
-    stride = buff.stride;
+    if (buf->stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
+    stride = buf->stride;
 }
 
 void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
@@ -67,9 +67,9 @@ void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
                                    buf->width,
                                    buf->height);
 
-    if (buff.stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
-    stride = buff.stride;
+    if (buf->stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
+    stride = buf->stride;
 
 }
 
