@@ -87,6 +87,8 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasCleaned)
     {
         nativeSurface = pojav_environ->pojavWindow;
+        ANativeWindow_acquire(nativeSurface);
+        ANativeWindow_setBuffersGeometry(nativeSurface, 0, 0, WINDOW_FORMAT_RGBX_8888);
         ANativeWindow_lock(nativeSurface, &buff, NULL);
     }
 
@@ -118,7 +120,6 @@ void *xxx2OsmCreateContext(void *contextSrc) {
 }
 
 void xxx2_osm_setup_window() {
-    nativeSurface = pojav_environ->pojavWindow;
 }
 
 void xxx2OsmSwapInterval(int interval) {
