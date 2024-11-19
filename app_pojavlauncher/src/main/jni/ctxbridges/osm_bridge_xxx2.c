@@ -39,44 +39,44 @@ void xxx2OsmloadSymbols() {
     dlsym_OSMesa();
 }
 
-void xxx2_osm_apply_current_l(ANativeWindow_Buffer* buf) {
+void xxx2_osm_apply_current_l() {
     OSMesaContext ctx = OSMesaGetCurrentContext_p();
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    OSMesaMakeCurrent_p(ctx, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
-    if (buf->stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    stride = buf->stride;
+    OSMesaMakeCurrent_p(ctx, buff.bits, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
+    if (buff.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
+    stride = buff.stride;
 }
 
-void xxx2_osm_apply_current_ll(void* window, ANativeWindow_Buffer* buf) {
+void xxx2_osm_apply_current_ll(void* window) {
     if (SpareBuffer())
     {
     #ifdef FRAME_BUFFER_SUPPOST
         OSMesaMakeCurrent_p((OSMesaContext)window,
                                 abuffer,
                                 GL_UNSIGNED_BYTE,
-                                buf->width,
-                                buf->height);
+                                pojav_environ->savedWidth,
+                                pojav_environ->savedHeight);
     #else
         printf("[ERROR]: Macro FRAME_BUFFER_SUPPOST is undefined\n");
     #endif
     } else OSMesaMakeCurrent_p((OSMesaContext)window,
                                    setbuffer,
                                    GL_UNSIGNED_BYTE,
-                                   buf->width,
-                                   buf->height);
+                                   pojav_environ->savedWidth,
+                                   pojav_environ->savedHeight);
 
-    if (buf->stride != stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    stride = buf->stride;
+    if (buff.stride != stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buff.stride);
+    stride = buff.stride;
 
 }
 
 void xxx2OsmSwapBuffers() {
     ANativeWindow_lock(nativeSurface, &buff, NULL);
-    xxx2_osm_apply_current_l(&buff);
+    xxx2_osm_apply_current_l();
     glFinish_p();
     ANativeWindow_unlockAndPost(nativeSurface);
 }
@@ -95,10 +95,10 @@ void xxx2OsmMakeCurrent(void *window) {
     if (!hasSetNoRendererBuffer)
     {
         hasSetNoRendererBuffer = true;
-        xxx2_osm_set_no_render_buffer(&buff);
+        // xxx2_osm_set_no_render_buffer(&buff);
     }
 
-    xxx2_osm_apply_current_ll(window, &buff);
+    xxx2_osm_apply_current_ll(window);
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
 
     printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
