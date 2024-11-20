@@ -15,6 +15,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
+static struct xxx2_osm_render_window_t *xxx2_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static char xxx2_no_render_buffer[4];
@@ -124,6 +125,13 @@ void xxx2OsmSwapInterval(int interval) {
 int xxx2OsmInit() {
     if (pojav_environ->config_bridge != BRIDGE_TBL_XXX2)
         return 0;
+
+    xxx2_osm = malloc(sizeof(struct xxx2_osm_render_window_t));
+    if (!xxx2_osm) {
+        fprintf(stderr, "Failed to allocate memory for xxx2_osm\n");
+        return -1;
+    }
+    memset(xxx2_osm, 0, sizeof(struct xxx2_osm_render_window_t));
 
     return 0;
 }

@@ -14,7 +14,6 @@ struct xxx2_osm_render_window_t {
     int32_t last_stride;
     void* window;
 };
-extern struct xxx2_osm_render_window_t *xxx2_osm;
 
 
 void* xxx2OsmGetCurrentContext();
