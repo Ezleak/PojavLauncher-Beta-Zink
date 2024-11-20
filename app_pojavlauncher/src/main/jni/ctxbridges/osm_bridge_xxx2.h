@@ -12,13 +12,11 @@ struct xxx2_osm_render_window_t {
     struct ANativeWindow *nativeSurface;
     ANativeWindow_Buffer buffer;
     int32_t last_stride;
-    OSMesaContext context;
     void* window;
 };
 extern struct xxx2_osm_render_window_t *xxx2_osm;
 
 
-void xxx2_osm_setup_window();
 void* xxx2OsmGetCurrentContext();
 void xxx2OsmloadSymbols();
 int xxx2OsmInit();
