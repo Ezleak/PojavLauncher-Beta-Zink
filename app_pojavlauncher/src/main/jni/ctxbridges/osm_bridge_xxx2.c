@@ -22,6 +22,8 @@ static char xxx2_no_render_buffer[4];
 
 void *abuffer;
 
+void setNativeWindowSwapInterval(struct ANativeWindow* nativeWindow, int swapInterval);
+
 void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->bits = &xxx2_no_render_buffer;
     buf->width = pojav_environ->savedWidth;
@@ -119,7 +121,8 @@ void *xxx2OsmCreateContext(void *contextSrc) {
 }
 
 void xxx2OsmSwapInterval(int interval) {
-    // Nothing to do here
+    if (xxx2_osm->nativeSurface != NULL)
+        setNativeWindowSwapInterval(xxx2_osm->nativeSurface, interval);
 }
 
 int xxx2OsmInit() {
