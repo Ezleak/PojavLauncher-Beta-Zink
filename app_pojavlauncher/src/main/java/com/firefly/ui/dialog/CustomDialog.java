@@ -162,9 +162,22 @@ public class CustomDialog {
                     dY = params.y - event.getRawY();
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    params.x = (int) (event.getRawX() + dX);
-                    params.y = (int) (event.getRawY() + dY);
-                    dialog.getWindow().setAttributes(params);
+                    float newX = event.getRawX() + dX;
+                    float newY = event.getRawY() + dY;
+
+                    WindowManager windowManager = (WindowManager) dialog.getContext().getSystemService(Context.WINDOW_SERVICE);
+                    if (windowManager != null) {
+                        WindowManager.LayoutParams layoutParams = dialog.getWindow().getAttributes();
+                        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+                        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+
+                        newX = Math.max(0, Math.min(newX, screenWidth - decorView.getWidth()));
+                        newY = Math.max(0, Math.min(newY, screenHeight - decorView.getHeight()));
+
+                        params.x = (int) newX;
+                        params.y = (int) newY;
+                        dialog.getWindow().setAttributes(params);
+                    }
                     break;
                 default:
                     return false;
