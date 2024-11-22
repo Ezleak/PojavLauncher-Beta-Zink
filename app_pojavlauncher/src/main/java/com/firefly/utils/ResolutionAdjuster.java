@@ -32,61 +32,77 @@ public class ResolutionAdjuster {
         int percentage = Math.round(mScaleFactor * 100);
 
         // 动态创建一个LinearLayout
-        // 什么?为什么不用.xml来创建?
-        // 因为麻烦
         LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.HORIZONTAL);  // 设置水平排列
+        layout.setOrientation(LinearLayout.HORIZONTAL);
         layout.setPadding(8, 8, 8, 8);
         layout.setGravity(Gravity.CENTER);
 
-        // 动态创建一个 SeekBar ,用于调整缩放因子
+        // 动态创建 "-" 按钮
+        final TextView minusButton = new TextView(context);
+        minusButton.setText("-");
+        minusButton.setTextSize(18);
+        minusButton.setGravity(Gravity.CENTER);
+        minusButton.setPadding(16, 16, 16, 16);
+        layout.addView(minusButton);
+
+        // 动态创建一个 SeekBar 用于调整缩放因子
         final SeekBar scaleSeekBar = new SeekBar(context);
-        scaleSeekBar.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)); // 设置权重1, 充满剩余空间
-        // 获取当前设置的最大缩放因子,并设置为滑动条的最大值
+        scaleSeekBar.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)); // 权重 1
         int maxScaleFactor = Math.max(LauncherPreferences.PREF_SCALE_FACTOR, 100);
         scaleSeekBar.setMax(maxScaleFactor - 25);
-        // 根据当前获取的缩放因子,设置滑动条初始值
         scaleSeekBar.setProgress((int) (mScaleFactor * 100) - 25);
         layout.addView(scaleSeekBar);
 
-        // 动态创建一个TextView,用于显示当前分辨率
+        // 动态创建 "+" 按钮
+        final TextView plusButton = new TextView(context);
+        plusButton.setText("+");
+        plusButton.setTextSize(18);
+        plusButton.setGravity(Gravity.CENTER);
+        plusButton.setPadding(16, 16, 16, 16);
+        layout.addView(plusButton);
+
+        // 动态创建一个TextView用于显示当前分辨率
         final TextView resolutionTextView = new TextView(context);
-        changeResolutionRatioPreview(percentage, resolutionTextView);  // 获取当前分辨率
+        changeResolutionRatioPreview(percentage, resolutionTextView);
         resolutionTextView.setTextSize(14);
-        resolutionTextView.setPadding(10, 0, 0, 0);  // 添加一些左侧间距
+        resolutionTextView.setPadding(10, 0, 0, 0);
         layout.addView(resolutionTextView);
 
-        // 动态创建一个TextView,用于显示缩放百分数
+        // 动态创建一个TextView用于显示缩放百分数
         final TextView scaleTextView = new TextView(context);
         scaleTextView.setText(percentage + "%");
         scaleTextView.setTextSize(14);
-        scaleTextView.setPadding(10, 0, 0, 0);  // 添加一些左侧间距
+        scaleTextView.setPadding(10, 0, 0, 0);
         layout.addView(scaleTextView);
 
-        // 设置滑动条监听器
         scaleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // 更新缩放因子
                 mScaleFactor = (progress + 25) / 100f;
                 listener.onChange(mScaleFactor);
-                // 将缩放因子转换为整数
                 int scaleFactor = Math.round(mScaleFactor * 100);
-                // 动态更新显示的缩放百分数
                 scaleTextView.setText(scaleFactor + "%");
-
-                // 动态更新分辨率TextView,根据缩放因子调整分辨率显示
                 changeResolutionRatioPreview(scaleFactor, resolutionTextView);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Nothing to do here
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) { }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Nothing to do here
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
+        minusButton.setOnClickListener(v -> {
+            int currentProgress = scaleSeekBar.getProgress();
+            if (currentProgress > 0) {
+                scaleSeekBar.setProgress(currentProgress - 1); // 微调 -1
+            }
+        });
+
+        plusButton.setOnClickListener(v -> {
+            int currentProgress = scaleSeekBar.getProgress();
+            if (currentProgress < scaleSeekBar.getMax()) {
+                scaleSeekBar.setProgress(currentProgress + 1); // 微调 +1
             }
         });
 
