@@ -253,12 +253,8 @@ hooked_ProcessImpl_forkAndExec(JNIEnv *env, jobject process, jint mode, jbyteArr
     if (strcmp(basename(pProg), "xdg-open") != 0)
     {
         (*env)->ReleaseByteArrayElements(env, prog, (jbyte *)pProg, 0);
-<<<<<<< HEAD
-        if (getenv("JSP")) {
-=======
         if (getenv("JSP"))
         {
->>>>>>> a9a6b56d4df3a53c567def2d9f2180ddab13b1b3
             jbyteArray new_hp = convertStr(env, getenv("JSP"));
             return orig_ProcessImpl_forkAndExec(env, process, mode, new_hp, prog, argBlock, argc, envBlock, envc, dir, std_fds, redirectErrorStream);
         }
