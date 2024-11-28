@@ -211,6 +211,7 @@ public class JREUtils {
         envMap.put("FORCE_VSYNC", String.valueOf(LauncherPreferences.PREF_FORCE_VSYNC));
         envMap.put("AWTSTUB_WIDTH", Integer.toString(CallbackBridge.windowWidth > 0 ? CallbackBridge.windowWidth : CallbackBridge.physicalWidth));
         envMap.put("AWTSTUB_HEIGHT", Integer.toString(CallbackBridge.windowHeight > 0 ? CallbackBridge.windowHeight : CallbackBridge.physicalHeight));
+        envMap.put("LD_PRELOAD", NATIVE_LIB_DIR + "/libfreedreno_noop_drm_shim.so");
 
         if (Tools.CONFIG_BRIDGE != null)
             envMap.put("POJAV_CONFIG_BRIDGE", Tools.CONFIG_BRIDGE);
