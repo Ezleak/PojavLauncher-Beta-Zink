@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.firefly.ui.subassembly.view.DraggableViewWrapper;
 import net.kdt.pojavlaunch.R;
 
 public class CustomDialog {
@@ -80,7 +81,40 @@ public class CustomDialog {
         builder.setView(view);
         dialog = builder.create();
 
-        if (draggable) dialog.setOnShowListener(dialogInterface -> setDraggable(dialog));
+        // if (draggable) dialog.setOnShowListener(dialogInterface -> setDraggable(dialog));
+        if (draggable) {
+            dialog.setOnShowListener(dialogInterface -> {
+                View decorView = dialog.getWindow().getDecorView();
+                DraggableViewWrapper draggableWrapper = new DraggableViewWrapper(
+                        decorView,
+                        new DraggableViewWrapper.AttributesFetcher() {
+                            @Override
+                            public DraggableViewWrapper.ScreenPixels getScreenPixels() {
+                                WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+                                int screenWidth = decorView.getResources().getDisplayMetrics().widthPixels;
+                                int screenHeight = decorView.getResources().getDisplayMetrics().heightPixels;
+
+                                return new DraggableViewWrapper.ScreenPixels(0, 0, screenWidth - decorView.getWidth(), screenHeight - decorView.getHeight());
+                            }
+
+                            @Override
+                            public int[] get() {
+                                WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+                                return new int[]{params.x, params.y};
+                            }
+
+                            @Override
+                            public void set(int x, int y) {
+                                WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+                                params.x = x;
+                                params.y = y;
+                                dialog.getWindow().setAttributes(params);
+                            }
+                        }
+                );
+                draggableWrapper.init();
+            });
+        }
 
         if (!cancelable) dialog.setCancelable(false);
 
