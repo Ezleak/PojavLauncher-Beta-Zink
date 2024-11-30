@@ -1,6 +1,7 @@
 package net.kdt.pojavlaunch.prefs.screens;
 
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_EXP_SETUP;
+import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_LOADER_OVERRIDE;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_NOTCH_SIZE;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_USE_ALTERNATE_SURFACE;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_ZINK_PREFER_SYSTEM_DRIVER;
@@ -157,7 +158,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         SwitchPreference expRendererPref = requirePreference("ExperimentalSetup", SwitchPreference.class);
         expRendererPref.setOnPreferenceChangeListener((p, v) -> {
             if ((boolean) v) {
-                onExpRendererDialog(p, rendererListPref);
+                onExpRendererDialog((SwitchPreference) p, rendererListPref);
                 return false;
             }
             ((SwitchPreference) p).setChecked(false);
@@ -196,7 +197,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         SwitchPreference useDRMShim = requirePreference("ebDrmShim", SwitchPreference.class);
         useDRMShim.setOnPreferenceChangeListener((p, v) -> {
             if ((boolean) v) {
-                showUseDRMShimDialog(p);
+                showUseDRMShimDialog((SwitchPreference) p);
                 return false;
             }
             return true;

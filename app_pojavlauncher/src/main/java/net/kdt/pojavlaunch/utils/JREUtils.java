@@ -707,7 +707,7 @@ public class JREUtils {
         return renderLibrary;
     }
 
-    String getDrmShimPath(boolean isAdreno) {
+    private static String getDrmShimPath(boolean isAdreno) {
         return isAdreno ? "/libfreedreno_noop_drm_shim.so" : "/libpanfrost_noop_drm_shim.so";
     }
 
