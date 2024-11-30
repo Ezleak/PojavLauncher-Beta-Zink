@@ -1,6 +1,8 @@
 package net.kdt.pojavlaunch.prefs.screens;
 
+import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_EXP_SETUP;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_NOTCH_SIZE;
+import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_USE_ALTERNATE_SURFACE;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_ZINK_PREFER_SYSTEM_DRIVER;
 
 import android.app.Activity;
@@ -191,6 +193,15 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             return true;
         });
 
+        SwitchPreference useDRMShim = requirePreference("ebDrmShim", SwitchPreference.class);
+        useDRMShim.setOnPreferenceChangeListener((p, v) -> {
+            if ((boolean) v) {
+                showUseDRMShimDialog(p);
+                return false;
+            }
+            return true;
+        });
+
         computeVisibility();
     }
 
@@ -201,13 +212,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
     }
 
     private void computeVisibility() {
-        requirePreference("force_vsync").setVisible(LauncherPreferences.PREF_USE_ALTERNATE_SURFACE);
+        requirePreference("force_vsync").setVisible(PREF_USE_ALTERNATE_SURFACE);
         requirePreference("chooseTurnipDriver").setVisible(PGWTools.isAdrenoGPU() && !PREF_ZINK_PREFER_SYSTEM_DRIVER);
-        requirePreference("SpareFrameBuffer").setVisible(LauncherPreferences.PREF_EXP_SETUP);
-        requirePreference("MesaRendererChoose").setVisible(LauncherPreferences.PREF_EXP_SETUP);
-        requirePreference("customMesaVersionPref").setVisible(LauncherPreferences.PREF_EXP_SETUP);
-        requirePreference("customMesaLoaderDriverOverride").setVisible(LauncherPreferences.PREF_EXP_SETUP);
-        requirePreference("ChooseMldo").setVisible(LauncherPreferences.PREF_LOADER_OVERRIDE);
+        requirePreference("SpareFrameBuffer").setVisible(PREF_EXP_SETUP);
+        requirePreference("MesaRendererChoose").setVisible(PREF_EXP_SETUP);
+        requirePreference("customMesaVersionPref").setVisible(PREF_EXP_SETUP);
+        requirePreference("customMesaLoaderDriverOverride").setVisible(PREF_EXP_SETUP);
+        requirePreference("ebChooseMldo").setVisible(PGWTools.isAdrenoGPU());
+        requirePreference("ChooseMldo").setVisible(PREF_LOADER_OVERRIDE);
     }
 
     private void setVideoResolutionDialog(CustomSeekBarPreference seek) {
@@ -327,12 +339,12 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 .show();
     }
 
-    private void onExpRendererDialog(Preference pre, ListPreference rendererListPref) {
+    private void onExpRendererDialog(SwitchPreference pre, ListPreference rendererListPref) {
         new CustomDialog.Builder(getContext())
                 .setTitle(getString(R.string.preference_rendererexp_alertdialog_warning))
                 .setMessage(getString(R.string.preference_rendererexp_alertdialog_message))
                 .setConfirmListener(R.string.preference_rendererexp_alertdialog_done, customView -> {
-                    ((SwitchPreference) pre).setChecked(true);
+                    pre.setChecked(true);
                     onChangeRenderer(rendererListPref);
                     setListPreference(rendererListPref, "renderer");
                     return true;
@@ -477,6 +489,20 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 }
             });
         });
+    }
+
+    private void showUseDRMShimDialog(SwitchPreference pre) {
+        new CustomDialog.Builder(getContext())
+                .setMessage(getString(R.string.drm_shim_warning))
+                .setConfirmListener(R.string.preference_rendererexp_alertdialog_done, customView -> {
+                    pre.setChecked(true);
+                    return true;
+                })
+                .setCancelListener(R.string.preference_rendererexp_alertdialog_cancel, customView -> true)
+                .setCancelable(false)
+                .setDraggable(true)
+                .build()
+                .show();
     }
 
     private void handleFileSelection(String selectType) {
