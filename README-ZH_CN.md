@@ -124,7 +124,7 @@ cd ../
 - 可能更多,这就是为什么我们有一个错误追踪器
 
 ## 许可证
-- [GNU GPLv3](https://github.com/Vera-Firefly/Pojav-Glow-Worm/blob/v3_openjdk/LICENSE).
+- [GNU GPLv3](https://github.com/Vera-Firefly/Pojav-Glow-Worm/blob/main_v3/LICENSE).
 
 ## 贡献
 欢迎投稿!我们欢迎任何类型的贡献,不仅仅是代码.例如,您可以帮忙翻译!
@@ -139,6 +139,7 @@ cd ../
 - [LWJGL3](https://github.com/PojavLauncherTeam/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md).
 - [LWJGLX](https://github.com/PojavLauncherTeam/lwjglx) (LWJGL2 API compatibility layer for LWJGL3): 未知许可证<br>
 - [Mesa 3D图形库](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
+- [Android-Mesa-Build](https://github.com/Vera-Firefly/android-mesa-build): [GNU GPLv3 License](https://github.com/Vera-Firefly/android-mesa-build/blob/master/LICENSE)
 - [pro-grade](https://github.com/pro-grade/pro-grade) (Java沙盒安全管理器): [Apache License 2.0](https://github.com/pro-grade/pro-grade/blob/master/LICENSE.txt).
 - [bhook](https://github.com/bytedance/bhook) (用于退出代码处理): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
 - [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/master/COPYING).
@@ -148,4 +149,4 @@ cd ../
 - 感谢[MCHeads](https://mc-heads.net)提供Minecraft头像组件
 
 ## 更多
-* 如果你想要一种不同的体验,试试其它的优秀魔改版:[Pojav ZH](https://github.com/HopiHopy/PojavZH)
+* 如果你想要一种不同的体验,试试其它的优秀魔改版:[ZalithLauncher](https://github.com/ZalithLauncher/ZalithLauncher)
