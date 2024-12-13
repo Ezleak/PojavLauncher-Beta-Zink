@@ -26,6 +26,12 @@ jobs:
           repository: fifth-light/TouchController
           path: TouchController
 
+      - name: Set up JDK 19
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 19
+
       - name: Build TouchController
         run: '(cd TouchController && chmod u+x gradlew && ./gradlew proxy-server:publishToMavenLocal proxy-client:publishToMavenLocal)'
 
@@ -107,6 +113,12 @@ jobs:
         with:
           repository: fifth-light/TouchController
           path: TouchController
+
+      - name: Set up JDK 19
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 19
 
       - name: Build TouchController
         run: '(cd TouchController && chmod u+x gradlew && ./gradlew proxy-server:publishToMavenLocal proxy-client:publishToMavenLocal)'
