@@ -272,7 +272,7 @@ dependencies {
     implementation 'org.tukaani:xz:1.8'
     implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
     implementation 'com.bytedance:bytehook:1.0.10'
-    implementation 'com.github.fifth-light:TouchController:0.0.1'
+    implementation 'com.github.fifth-light:TouchController:1ace6a9'
 
     // implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
 
