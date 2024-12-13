@@ -26,15 +26,6 @@ jobs:
           repository: fifth-light/TouchController
           path: TouchController
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 21
-
-      - name: Build TouchController
-        run: '(cd TouchController && chmod u+x gradlew && ./gradlew proxy-server:publishToMavenLocal proxy-client:publishToMavenLocal)'
-
       - name: Set IS_OFFICIAL if in the Creator Repository
         if: github.repository_owner == 'Vera-Firefly'
         run: echo "IS_OFFICIAL=true" >> $GITHUB_ENV
@@ -169,3 +160,9 @@ jobs:
         with:
           name: PGW-debug-${{matrix.arch}}-noruntime
           path: app_pojavlauncher/build/outputs/apk/debug/*
+
+      - name: Upload TC
+        uses: actions/upload-artifact@v4
+        with:
+          name: TC-${{matrix.arch}}
+          path: TouchController/*
