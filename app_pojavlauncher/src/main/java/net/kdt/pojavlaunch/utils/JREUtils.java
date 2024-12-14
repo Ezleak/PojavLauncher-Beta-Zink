@@ -65,13 +65,15 @@ import top.fifthlight.touchcontroller.proxy.client.LauncherSocketProxyClient;
 import top.fifthlight.touchcontroller.proxy.client.LauncherSocketProxyClientKt;
 
 public class JREUtils {
-    private JREUtils() {
-    }
+
+    private JREUtils() {}
 
     public static String LD_LIBRARY_PATH;
     public static String jvmLibraryPath;
     private static String glVersion = PREF_MESA_GL_VERSION;
     private static String glslVersion = PREF_MESA_GLSL_VERSION;
+    public static LauncherSocketProxyClient touchControllerProxy;
+    public static int touchControllerProxyPort = -1;
 
     public static String findInLdLibPath(String libName) {
         if (Os.getenv("LD_LIBRARY_PATH") == null) {
@@ -282,6 +284,7 @@ public class JREUtils {
                 case "vulkan_zink": {
                     envMap.put("POJAV_BETA_RENDERER", "mesa_3d");
                     envMap.put("LOCAL_DRIVER_MODEL", "driver_zink");
+                    envMap.put("mesa_glthread", "true");
                 }
                 break;
                 case "virglrenderer": {
@@ -289,6 +292,7 @@ public class JREUtils {
                     envMap.put("LOCAL_DRIVER_MODEL", "driver_virgl");
                     envMap.put("MESA_GL_VERSION_OVERRIDE", "4.3");
                     envMap.put("MESA_GLSL_VERSION_OVERRIDE", "430");
+                    envMap.put("mesa_glthread", "true");
                     envMap.put("VTEST_SOCKET_NAME", new File(Tools.DIR_CACHE, ".virgl_test").getAbsolutePath());
                 }
                 break;
@@ -458,10 +462,7 @@ public class JREUtils {
         }
     }
 
-    public static LauncherSocketProxyClient touchControllerProxy;
-    public static int touchControllerProxyPort = -1;
-
-    public static int launchJavaVM(final Activity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
+    private static void onTouchControllerProxy() throws Throwable {
         if (touchControllerProxy == null) {
             touchControllerProxyPort = ThreadLocalRandom.current().nextInt(32768) + 32768;
             touchControllerProxy = LauncherSocketProxyClientKt.localhostLauncherSocketProxyClient(touchControllerProxyPort);
@@ -475,10 +476,13 @@ public class JREUtils {
         if (touchControllerProxyPort > 0) {
             Os.setenv("TOUCH_CONTROLLER_PROXY", String.valueOf(touchControllerProxyPort), true);
         }
-        String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
+    }
 
+    public static int launchJavaVM(final Activity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
+        String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
         JREUtils.relocateLibPath(runtime, runtimeHome);
 
+        onTouchControllerProxy():
         setJavaEnv(runtimeHome);
         setCustomEnv();
         checkAndUsedJSPH(runtime);
