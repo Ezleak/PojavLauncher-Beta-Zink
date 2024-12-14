@@ -5,6 +5,8 @@ import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.fifthLight.touchController.ControllerProxy;
+
 import top.fifthlight.touchcontroller.proxy.data.Offset;
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage;
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage;
@@ -53,7 +55,7 @@ public class ContactHandler {
                 }
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL: {
-                    proxy.trySend(new ClearPointerMessage());
+                    proxy.trySend(ClearPointerMessage.INSTANCE);
                     pointerIdMap.clear();
                     break;
                 }
