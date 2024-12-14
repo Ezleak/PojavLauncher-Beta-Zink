@@ -482,7 +482,7 @@ public class JREUtils {
         String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
         JREUtils.relocateLibPath(runtime, runtimeHome);
 
-        onTouchControllerProxy():
+        onTouchControllerProxy();
         setJavaEnv(runtimeHome);
         setCustomEnv();
         checkAndUsedJSPH(runtime);
