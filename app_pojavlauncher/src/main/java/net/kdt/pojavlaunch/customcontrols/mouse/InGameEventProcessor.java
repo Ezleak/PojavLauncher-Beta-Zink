@@ -26,8 +26,8 @@ public class InGameEventProcessor implements TouchEventProcessor {
 
     @Override
     public boolean processTouchEvent(MotionEvent motionEvent, View view) {
+        mContactHandler.progressEvent(motionEvent, view);
         switch (motionEvent.getActionMasked()) {
-            mContactHandler.progressEvent(motionEvent, view);
             case MotionEvent.ACTION_DOWN:
                 mTracker.startTracking(motionEvent);
                 if (LauncherPreferences.PREF_DISABLE_GESTURES) break;
