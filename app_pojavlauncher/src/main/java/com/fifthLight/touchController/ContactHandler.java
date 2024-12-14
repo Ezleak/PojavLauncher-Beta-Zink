@@ -5,8 +5,6 @@ import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.fifthLight.touchController.ControllerProxy;
-
 import top.fifthlight.touchcontroller.proxy.data.Offset;
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage;
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage;
@@ -18,7 +16,7 @@ public class ContactHandler {
     private static int nextPointerId = 1;
 
     public void progressEvent(MotionEvent motionEvent, View touchView) {
-        ControllerProxy.ProxyClient proxy = ControllerProxy.getProxyClient();
+        ControllerProxy proxy = ControllerProxy.getProxyClient();
         if (proxy != null) {
             switch (motionEvent.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
@@ -54,11 +52,9 @@ public class ContactHandler {
                     break;
                 }
                 case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL: {
-                    proxy.trySend(ClearPointerMessage.INSTANCE);
-                    pointerIdMap.clear();
+                case MotionEvent.ACTION_CANCEL:
+                    clearPointer(proxy);
                     break;
-                }
                 case MotionEvent.ACTION_POINTER_UP: {
                     int i = motionEvent.getActionIndex();
                     int pointerId = pointerIdMap.get(motionEvent.getPointerId(i));
@@ -74,6 +70,19 @@ public class ContactHandler {
                     break;
             }
         }
+    }
+
+    private void clearPointer(LauncherSocketProxyClient proxy) {
+        proxy.trySend(ClearPointerMessage.INSTANCE);
+        pointerIdMap.clear();
+    }
+
+    public void clearPointer() {
+        ControllerProxy proxy = ControllerProxy.getProxyClient();
+        if (proxy != null) {
+            clearPointer(proxy);
+        }
+        pointerIdMap.clear();
     }
 
 }
