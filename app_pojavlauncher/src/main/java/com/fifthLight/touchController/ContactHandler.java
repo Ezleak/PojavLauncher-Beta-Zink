@@ -17,7 +17,7 @@ public class ContactHandler {
     private static int nextPointerId = 1;
 
     public void progressEvent(MotionEvent motionEvent, View touchView) {
-        ControllerProxy proxy = ControllerProxy.getProxyClient();
+        LauncherSocketProxyClient proxy = ControllerProxy.getProxyClient();
         if (proxy != null) {
             switch (motionEvent.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN: {
@@ -79,7 +79,7 @@ public class ContactHandler {
     }
 
     public void clearPointer() {
-        ControllerProxy proxy = ControllerProxy.getProxyClient();
+        LauncherSocketProxyClient proxy = ControllerProxy.getProxyClient();
         if (proxy != null) {
             clearPointer(proxy);
         }
