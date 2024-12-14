@@ -5,6 +5,7 @@ import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 
+import top.fifthlight.touchcontroller.proxy.client.LauncherSocketProxyClient;
 import top.fifthlight.touchcontroller.proxy.data.Offset;
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage;
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage;
