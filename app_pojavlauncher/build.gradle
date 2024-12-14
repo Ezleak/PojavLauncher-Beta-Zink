@@ -264,6 +264,7 @@ dependencies {
     implementation 'com.github.Mathias-Boulay:ExtendedView:1.0.0'
     implementation 'com.github.Mathias-Boulay:android_gamepad_remapper:2.0.3'
     implementation 'com.github.Mathias-Boulay:virtual-joystick-android:2e7aa25e50'
+    implementation 'top.fifthlight.touchcontroller:proxy-client:0.0.1'
 
 
     // implementation 'com.intuit.sdp:sdp-android:1.0.5'
@@ -272,7 +273,6 @@ dependencies {
     implementation 'org.tukaani:xz:1.8'
     implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
     implementation 'com.bytedance:bytehook:1.0.10'
-    implementation 'top.fifthlight.touchcontroller:proxy-client:0.0.1'
 
     // implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
 
