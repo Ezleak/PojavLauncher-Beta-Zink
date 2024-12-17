@@ -87,7 +87,7 @@ void xxx3OsmMakeCurrent(void *window) {
     if (!hasCleaned)
     {
         printf("OSMDroid: making current\n");
-        xxx3_osm->hardwareBuffer = pojav_environ->pojavBuffer;
+        xxx3_osm->hardwareBuffer = pojav_environ->pojavWindow;
         AHardwareBuffer_acquire(xxx3_osm->hardwareBuffer);
 
         AHardwareBuffer_Desc desc;
