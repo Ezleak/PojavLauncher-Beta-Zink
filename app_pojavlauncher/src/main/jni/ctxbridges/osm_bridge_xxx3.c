@@ -3,7 +3,7 @@
 //
 
 #include <android/native_window.h>
-#include <hardware/hardware.h>
+#include <android/hardware_buffer.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -89,7 +89,12 @@ void xxx3OsmMakeCurrent(void *window) {
         printf("OSMDroid: making current\n");
         xxx3_osm->hardwareBuffer = pojav_environ->pojavBuffer;
         AHardwareBuffer_acquire(xxx3_osm->hardwareBuffer);
-        AHardwareBuffer_setFormat(xxx3_osm->hardwareBuffer, AFORMAT_RGBA_8888);
+
+        AHardwareBuffer_Desc desc;
+        AHardwareBuffer_describe(xxx3_osm->hardwareBuffer, &desc);
+        desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+        AHardwareBuffer_allocate(&desc, &xxx3_osm->hardwareBuffer);
+
         AHardwareBuffer_lock(xxx3_osm->hardwareBuffer, NULL, &xxx3_osm->buffer);
     }
 

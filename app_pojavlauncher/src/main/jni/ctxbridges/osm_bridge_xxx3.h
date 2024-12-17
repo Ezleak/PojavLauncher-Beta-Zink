@@ -2,7 +2,7 @@
 #define OSM_BRIDGE_XXX3_H
 
 #include <android/native_window.h>
-#include <hardware/hardware.h>
+#include <android/hardware_buffer.h>
 
 struct xxx3_osm_render_window_t {
     AHardwareBuffer* hardwareBuffer;
