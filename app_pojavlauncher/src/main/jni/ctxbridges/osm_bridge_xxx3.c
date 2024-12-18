@@ -92,7 +92,7 @@ void xxx3OsmMakeCurrent(void *window) {
         // xxx3_osm->hardwareBuffer = pojav_environ->pojavWindow;
         AHardwareBuffer_acquire(xxx3_osm->hardwareBuffer);
 
-        xxx3_osm->desc =
+        AHardwareBuffer_Desc desc =
         {
             xxx3_osm->width,
             xxx3_osm->height,
@@ -106,6 +106,7 @@ void xxx3OsmMakeCurrent(void *window) {
             0,
             0
         };
+        xxx3_osm->desc = desc;
         AHardwareBuffer_describe(xxx3_osm->hardwareBuffer, &xxx3_osm->desc);
         AHardwareBuffer_allocate(&xxx3_osm->desc, &xxx3_osm->hardwareBuffer);
 
@@ -157,7 +158,7 @@ int xxx3OsmInit() {
     xxx3_osm = malloc(sizeof(struct xxx3_osm_render_window_t));
     xxx3_osm->width = pojav_environ->savedWidth;
     xxx3_osm->height = pojav_environ->savedHeight;
-    framebuffer = malloc(xxx3_osm->width * xxx3_osm->height * 4);
+    xxx3_osm->framebuffer = malloc(xxx3_osm->width * xxx3_osm->height * 4);
     if (!xxx3_osm) {
         fprintf(stderr, "Failed to allocate memory for xxx3_osm\n");
         return -1;
