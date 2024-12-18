@@ -33,7 +33,7 @@ void xxx3_osm_apply_current_l() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    OSMesaMakeCurrent_p(xxx3_osm->context, xxx3_osm->framebuffer, GL_UNSIGNED_BYTE, xxx3_osm->width, xxx3_osm->height);
+    OSMesaMakeCurrent_p(ctx, xxx3_osm->framebuffer, GL_UNSIGNED_BYTE, xxx3_osm->width, xxx3_osm->height);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, xxx3_osm->width * 4);
 }
 
