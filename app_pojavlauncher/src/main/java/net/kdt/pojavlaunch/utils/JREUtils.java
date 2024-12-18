@@ -819,7 +819,7 @@ public class JREUtils {
     public static native int[] renderAWTScreenFrame(/* Object canvas, int width, int height */);
 
     static {
-        System.loadLibrary("pgw");
-        System.loadLibrary("pgw_awt");
+        System.loadLibrary("pojavexec");
+        System.loadLibrary("pojavexec_awt");
     }
 }

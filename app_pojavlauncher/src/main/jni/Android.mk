@@ -16,7 +16,7 @@ include $(CLEAR_VARS)
 # Link GLESv2 for test
 LOCAL_LDLIBS := -ldl -llog -landroid
 # -lGLESv2
-LOCAL_MODULE := pgw
+LOCAL_MODULE := pojavexec
 LOCAL_SHARED_LIBRARIES := bytehook
 LOCAL_CFLAGS += -g -rdynamic
 # LOCAL_CFLAGS += -DDEBUG
@@ -57,7 +57,7 @@ include $(BUILD_SHARED_LIBRARY)
 #endif
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := pgw_awt
+LOCAL_MODULE := pojavexec_awt
 LOCAL_SRC_FILES := \
     awt_bridge.c
 include $(BUILD_SHARED_LIBRARY)

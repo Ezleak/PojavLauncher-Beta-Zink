@@ -35,7 +35,7 @@ public class AWTInputBridge {
     }
 
     static {
-        System.loadLibrary("pgw_awt");
+        System.loadLibrary("pojavexec_awt");
     }
 
     public static native void nativeSendData(int type, int i1, int i2, int i3, int i4);

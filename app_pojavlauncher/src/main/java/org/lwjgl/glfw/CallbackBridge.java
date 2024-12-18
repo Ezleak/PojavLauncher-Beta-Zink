@@ -230,7 +230,7 @@ public class CallbackBridge {
     public static native void nativeSetWindowAttrib(int attrib, int value);
 
     static {
-        System.loadLibrary("pgw");
+        System.loadLibrary("pojavexec");
     }
 }
 
