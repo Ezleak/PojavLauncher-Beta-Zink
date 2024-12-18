@@ -3,6 +3,7 @@
 
 #include <android/native_window.h>
 #include <android/hardware_buffer.h>
+#include "osmesa_loader.h"
 
 struct xxx3_osm_render_window_t {
     AHardwareBuffer* hardwareBuffer;
