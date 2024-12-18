@@ -134,7 +134,7 @@ void xxx3OsmMakeCurrent(void *window) {
 
 void *xxx3OsmCreateContext(void *contextSrc) {
     printf("OSMDroid: generating context\n");
-    void *ctx = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
+    void *ctx = OSMesaCreateContext_p(OSMESA_RGBA, NULL);
     printf("OSMDroid: context=%p\n", ctx);
     return ctx;
 }
