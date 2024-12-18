@@ -98,12 +98,8 @@ void *xxx4OsmCreateContext(void *contextSrc) {
     }
     memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
 
-    OSMesaContext osmesa_share = NULL;
-    if (contextSrc != NULL)
-        osmesa_share = (OSMesaContext)contextSrc;
-
     printf("OSMDroid: generating context\n");
-    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
+    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
     if (context == NULL)
     {
         free(xxx4_osm);
