@@ -74,7 +74,7 @@ EXTERNAL_API void pojavTerminate() {
         case RENDERER_VK_ZINK_XXX1:
         case RENDERER_VK_ZINK_XXX2:
         case RENDERER_VK_ZINK_XXX3:
-        case RENDERER_VK_ZINK_XXX4
+        case RENDERER_VK_ZINK_XXX4:
             // Nothing to do here
             break;
     }
