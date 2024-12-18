@@ -7,6 +7,7 @@
 struct xxx3_osm_render_window_t {
     AHardwareBuffer* hardwareBuffer;
     AHardwareBuffer_Desc desc;
+    OSMesaContext context;
     int32_t last_stride;
     uint8_t* framebuffer;
     void* window;

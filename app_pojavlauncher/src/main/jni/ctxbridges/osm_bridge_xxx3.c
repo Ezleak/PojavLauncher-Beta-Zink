@@ -33,7 +33,7 @@ void xxx3_osm_apply_current_l() {
     if (ctx == NULL)
         printf("Zink: attempted to swap buffers without context!");
 
-    OSMesaMakeCurrent_p(ctx, xxx3_osm->framebuffer, GL_UNSIGNED_BYTE, xxx3_osm->width, xxx3_osm->height);
+    OSMesaMakeCurrent_p(xxx3_osm->context, xxx3_osm->framebuffer, GL_UNSIGNED_BYTE, xxx3_osm->width, xxx3_osm->height);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, xxx3_osm->width * 4);
 }
 
@@ -134,7 +134,9 @@ void xxx3OsmMakeCurrent(void *window) {
 
 void *xxx3OsmCreateContext(void *contextSrc) {
     printf("OSMDroid: generating context\n");
-    void *ctx = OSMesaCreateContext_p(OSMESA_RGBA, NULL);
+    xxx3_osm->context = contextSrc;
+    OSMesaContext context = xxx3_osm->context;
+    OSMesaContext ctx = OSMesaCreateContext_p(OSMESA_RGBA, context);
     printf("OSMDroid: context=%p\n", ctx);
     return ctx;
 }
