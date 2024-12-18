@@ -290,7 +290,7 @@ void hookExec() {
  * It is not a problem as most of the libraries are in the launcher path, but when you try to run
  * VulkanMod which loads shaderc outside of the default jni libs directory through this method,
  * it can't load it because the path is not in the allowed paths for the anonymous namesapce.
- * This method fixes the issue by being in libpojavexec, and thus being in the classloader namespace
+ * This method fixes the issue by being in libpgw, and thus being in the classloader namespace
  */
 jlong ndlopen_bugfix(__attribute__((unused)) JNIEnv *env,
                      __attribute__((unused)) jclass class,
@@ -673,9 +673,9 @@ static void registerFunctions(JNIEnv *env) {
 
     if (use_critical_cc)
     {
-        __android_log_print(ANDROID_LOG_INFO, "pojavexec", "CriticalNative is available. Enjoy the 4.6x times faster input!");
+        __android_log_print(ANDROID_LOG_INFO, "pgw", "CriticalNative is available. Enjoy the 4.6x times faster input!");
     } else {
-        __android_log_print(ANDROID_LOG_INFO, "pojavexec", "CriticalNative is not available. Upgrade, maybe?");
+        __android_log_print(ANDROID_LOG_INFO, "pgw", "CriticalNative is not available. Upgrade, maybe?");
     }
 
     (*env)->RegisterNatives(env,
