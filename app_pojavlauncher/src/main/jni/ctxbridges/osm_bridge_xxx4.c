@@ -38,6 +38,25 @@ void xxx4OsmloadSymbols() {
     dlsym_OSMesa();
 }
 
+xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) {
+    xxx4_osm_render_window_t* render_window = malloc(sizeof(xxx4_osm_render_window_t));
+    if (render_window == NULL) return NULL;
+    memset(render_window, 0, sizeof(xxx4_osm_render_window_t));
+
+    printf("OSMDroid: generating context\n");
+    OSMesaContext osmesa_share = NULL;
+    if (share != NULL) osmesa_share = share->context;
+    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
+    if (context == NULL)
+    {
+        free(render_window);
+        return NULL;
+    }
+    render_window->context = context;
+    printf("OSMDroid: context=%p\n", context);
+    return render_window;
+}
+
 void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
     if (xxx4_osm->context == NULL)
         xxx4_osm->context = OSMesaGetCurrentContext_p();
@@ -55,7 +74,7 @@ void xxx4OsmSwapBuffers() {
 }
 
 void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
-    if (window == NULL)
+    if (bundle == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
         xxx4_osm = NULL;
@@ -92,29 +111,6 @@ void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
     }
 }
 
-xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) {
-    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
-    if (!xxx4_osm) {
-        fprintf(stderr, "Failed to allocate memory for xxx4_osm\n");
-        return -1;
-    }
-    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
-
-    OSMesaContext osmesa_share = NULL;
-    if (contextSrc != NULL)
-        osmesa_share = share->context;
-
-    printf("OSMDroid: generating context\n");
-    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
-    if (context == NULL)
-    {
-        free(xxx4_osm);
-        return NULL;
-    }
-    xxx4_osm->context = context;
-    printf("OSMDroid: context=%p\n", xxx4_osm->context);
-    return xxx4_osm;
-}
 
 void xxx4OsmSwapInterval(int interval) {
     if (xxx4_osm->nativeSurface != NULL)
