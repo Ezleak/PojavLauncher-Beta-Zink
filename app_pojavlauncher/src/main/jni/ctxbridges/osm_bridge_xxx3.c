@@ -92,29 +92,6 @@ void xxx3OsmMakeCurrent(void *window) {
         } else {
             printf("OSMDroid: allocate fail\n");
         }
-        /*
-        AHardwareBuffer_Desc desc =
-        {
-            xxx3_osm->width,
-            xxx3_osm->height,
-            1,
-            AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM,
-            AHARDWAREBUFFER_USAGE_CPU_READ_NEVER
-            | AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN
-            | AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE
-            | AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT,
-            0,
-            0,
-            0
-        };
-        AHardwareBuffer_allocate(&xxx3_osm->desc, &xxx3_osm->hardwareBuffer);
-        AHardwareBuffer_lock(
-            xxx3_osm->hardwareBuffer,
-            AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN,
-            -1,
-            NULL,
-            &xxx3_osm->destBuffer);
-        */
     }
 
     xxx3_osm->window = window;
@@ -134,16 +111,13 @@ void xxx3OsmMakeCurrent(void *window) {
 
 void *xxx3OsmCreateContext(void *contextSrc) {
     printf("OSMDroid: generating context\n");
-    xxx3_osm->context = contextSrc;
-    OSMesaContext context = xxx3_osm->context;
-    OSMesaContext ctx = OSMesaCreateContext_p(OSMESA_RGBA, context);
+    void* ctx = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
     printf("OSMDroid: context=%p\n", ctx);
     return ctx;
 }
 
 void xxx3OsmSwapInterval(int interval) {
-    // if (xxx3_osm->hardwareBuffer != NULL)
-        // setNativeWindowSwapInterval(xxx3_osm->hardwareBuffer, interval);
+
 }
 
 int xxx3OsmInit() {
