@@ -1,3 +1,7 @@
+//
+// Created by Vera-Firefly on 18.12.2024.
+//
+
 #ifndef OSM_BRIDGE_XXX3_H
 #define OSM_BRIDGE_XXX3_H
 

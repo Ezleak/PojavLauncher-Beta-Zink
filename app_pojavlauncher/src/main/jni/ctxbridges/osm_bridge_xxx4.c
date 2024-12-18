@@ -1,5 +1,5 @@
 //
-// Created by Vera-Firefly on 20.11.2024.
+// Created by Vera-Firefly on 18.12.2024.
 //
 
 #include <android/native_window.h>
@@ -56,7 +56,7 @@ void xxx4OsmMakeCurrent(void *window) {
     if (window == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
-        currentBundle = NULL;
+        xxx4_osm = NULL;
         return;
     }
 
@@ -97,8 +97,11 @@ void *xxx4OsmCreateContext(void *contextSrc) {
         return NULL;
     }
     memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
+
+    OSMesaContext osmesa_share = NULL;
     if (contextSrc != NULL)
-        OSMesaContext osmesa_share = contextSrc;
+        osmesa_share = (OSMesaContext)contextSrc;
+
     printf("OSMDroid: generating context\n");
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
     if (context == NULL)
