@@ -16,7 +16,7 @@ include $(CLEAR_VARS)
 # Link GLESv2 for test
 LOCAL_LDLIBS := -ldl -llog -landroid
 # -lGLESv2
-LOCAL_MODULE := pojavexec
+LOCAL_MODULE := pgw
 LOCAL_SHARED_LIBRARIES := bytehook
 LOCAL_CFLAGS += -g -rdynamic
 # LOCAL_CFLAGS += -DDEBUG
@@ -29,6 +29,7 @@ LOCAL_SRC_FILES := \
     ctxbridges/osm_bridge_xxx1.c \
     ctxbridges/osm_bridge_xxx2.c \
     ctxbridges/osm_bridge_xxx3.c \
+    ctxbridges/osm_bridge_xxx4.c \
     ctxbridges/egl_loader.c \
     ctxbridges/osmesa_loader.c \
     ctxbridges/swap_interval_no_egl.c \
@@ -56,7 +57,7 @@ include $(BUILD_SHARED_LIBRARY)
 #endif
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := pojavexec_awt
+LOCAL_MODULE := pgw_awt
 LOCAL_SRC_FILES := \
     awt_bridge.c
 include $(BUILD_SHARED_LIBRARY)
