@@ -9,13 +9,13 @@
 #include <android/native_window_jni.h>
 #include "osmesa_loader.h"
 
-struct xxx4_osm_render_window_t {
+typedef struct {
     struct ANativeWindow *nativeSurface;
     ANativeWindow_Buffer buffer;
     OSMesaContext context;
     int32_t last_stride;
     void* window;
-};
+} xxx4_osm_render_window_t;
 
 
 xxx4_osm_render_window_t* xxx4OsmGetCurrentContext();
