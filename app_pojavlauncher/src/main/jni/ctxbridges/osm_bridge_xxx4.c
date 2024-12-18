@@ -38,15 +38,8 @@ void xxx4OsmloadSymbols() {
     dlsym_OSMesa();
 }
 
-void xxx4_osm_apply_current_l(ANativeWindow_Buffer* buf) {
+void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
     OSMesaMakeCurrent_p(xxx4_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
-    if (buf->stride != xxx4_osm->last_stride)
-        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
-    xxx4_osm->last_stride = buf->stride;
-}
-
-void xxx4_osm_apply_current_ll(ANativeWindow_Buffer* buf) {
-    OSMesaMakeCurrent_p((OSMesaContext)xxx4_osm->window, setbuffer, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx4_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     xxx4_osm->last_stride = buf->stride;
@@ -54,7 +47,7 @@ void xxx4_osm_apply_current_ll(ANativeWindow_Buffer* buf) {
 
 void xxx4OsmSwapBuffers() {
     ANativeWindow_lock(xxx4_osm->nativeSurface, &xxx4_osm->buffer, NULL);
-    xxx4_osm_apply_current_l(&xxx4_osm->buffer);
+    xxx4_osm_apply_current(&xxx4_osm->buffer);
     glFinish_p();
     ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
 }
@@ -83,7 +76,7 @@ void xxx4OsmMakeCurrent(void *window) {
     }
 
     xxx4_osm->window = window;
-    xxx4_osm_apply_current_ll(&xxx4_osm->buffer);
+    xxx4_osm_apply_current(&xxx4_osm->buffer);
 
     if (!hasCleaned)
     {
@@ -98,15 +91,12 @@ void xxx4OsmMakeCurrent(void *window) {
 }
 
 void *xxx4OsmCreateContext(void *contextSrc) {
-    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
-    if (!xxx4_osm) {
-        fprintf(stderr, "Failed to allocate memory for xxx4_osm\n");
-        return NULL;
-    }
-    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
+    OSMesaContext osmesa_share = NULL;
+    if (contextSrc != NULL)
+        osmesa_share = (OSMesaContext)contextSrc;
 
     printf("OSMDroid: generating context\n");
-    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
+    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
     if (context == NULL)
     {
         free(xxx4_osm);
@@ -120,4 +110,18 @@ void *xxx4OsmCreateContext(void *contextSrc) {
 void xxx4OsmSwapInterval(int interval) {
     if (xxx4_osm->nativeSurface != NULL)
         setNativeWindowSwapInterval(xxx4_osm->nativeSurface, interval);
+}
+
+int xxx4OsmInit() {
+    if (pojav_environ->config_bridge != BRIDGE_TBL_XXX4)
+        return 0;
+
+    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
+    if (!xxx4_osm) {
+        fprintf(stderr, "Failed to allocate memory for xxx2_osm\n");
+        return -1;
+    }
+    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
+
+    return 0;
 }

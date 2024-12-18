@@ -211,6 +211,7 @@ void renderer_load_config() {
         } break;
         case BRIDGE_TBL_XXX4: {
             pojav_environ->config_renderer = RENDERER_VK_ZINK_XXX4;
+            xxx4OsmInit();
             xxx4OsmloadSymbols();
         } break;
         default:
