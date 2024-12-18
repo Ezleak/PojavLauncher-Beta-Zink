@@ -18,12 +18,12 @@ struct xxx4_osm_render_window_t {
 };
 
 
-void* xxx4OsmGetCurrentContext();
+xxx4_osm_render_window_t* xxx4OsmGetCurrentContext();
+xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t* share);
 void xxx4OsmloadSymbols();
 int xxx4OsmInit();
 void xxx4OsmSwapBuffers();
-void xxx4OsmMakeCurrent(void* window);
-void* xxx4OsmCreateContext(void* contextSrc);
+void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle);
 void xxx4OsmSwapInterval(int interval);
 
 #endif //OSM_BRIDGE_XXX4_H

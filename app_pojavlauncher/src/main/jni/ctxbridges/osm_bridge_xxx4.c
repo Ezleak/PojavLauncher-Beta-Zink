@@ -30,8 +30,8 @@ void xxx4_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->stride = 0;
 }
 
-void *xxx4OsmGetCurrentContext() {
-    return xxx4_osm->context;
+xxx4_osm_render_window_t* xxx4OsmGetCurrentContext() {
+    return xxx4_osm;
 }
 
 void xxx4OsmloadSymbols() {
@@ -39,6 +39,8 @@ void xxx4OsmloadSymbols() {
 }
 
 void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
+    if (xxx4_osm->context == NULL)
+        xxx4_osm->context = OSMesaGetCurrentContext_p();
     OSMesaMakeCurrent_p(xxx4_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx4_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
@@ -52,13 +54,14 @@ void xxx4OsmSwapBuffers() {
     ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
 }
 
-void xxx4OsmMakeCurrent(void *window) {
+void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
     if (window == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
         xxx4_osm = NULL;
         return;
     }
+    xxx4_osm = bundle;
 
     if (!hasCleaned)
     {
@@ -75,7 +78,6 @@ void xxx4OsmMakeCurrent(void *window) {
         xxx4_osm_set_no_render_buffer(&xxx4_osm->buffer);
     }
 
-    xxx4_osm->window = window;
     xxx4_osm_apply_current(&xxx4_osm->buffer);
 
     if (!hasCleaned)
@@ -90,10 +92,17 @@ void xxx4OsmMakeCurrent(void *window) {
     }
 }
 
-void *xxx4OsmCreateContext(void *contextSrc) {
+xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) {
+    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
+    if (!xxx4_osm) {
+        fprintf(stderr, "Failed to allocate memory for xxx4_osm\n");
+        return -1;
+    }
+    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
+
     OSMesaContext osmesa_share = NULL;
     if (contextSrc != NULL)
-        osmesa_share = (OSMesaContext)contextSrc;
+        osmesa_share = share->context;
 
     printf("OSMDroid: generating context\n");
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
@@ -104,7 +113,7 @@ void *xxx4OsmCreateContext(void *contextSrc) {
     }
     xxx4_osm->context = context;
     printf("OSMDroid: context=%p\n", xxx4_osm->context);
-    return xxx4_osm->context;
+    return xxx4_osm;
 }
 
 void xxx4OsmSwapInterval(int interval) {
@@ -115,13 +124,6 @@ void xxx4OsmSwapInterval(int interval) {
 int xxx4OsmInit() {
     if (pojav_environ->config_bridge != BRIDGE_TBL_XXX4)
         return 0;
-
-    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
-    if (!xxx4_osm) {
-        fprintf(stderr, "Failed to allocate memory for xxx2_osm\n");
-        return -1;
-    }
-    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
 
     return 0;
 }
