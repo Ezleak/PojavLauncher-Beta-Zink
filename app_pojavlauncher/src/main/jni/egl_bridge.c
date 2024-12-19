@@ -35,6 +35,7 @@
 #include "ctxbridges/osm_bridge_xxx2.h"
 #include "ctxbridges/osm_bridge_xxx3.h"
 #include "ctxbridges/osm_bridge_xxx4.h"
+#include "ctxbridges/xxx4_osm.h"
 #include "ctxbridges/renderer_config.h"
 #include "ctxbridges/virgl_bridge.h"
 #include "driver_helper/nsbypass.h"

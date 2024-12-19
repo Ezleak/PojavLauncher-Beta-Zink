@@ -16,7 +16,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-static __thread  xxx4_osm_render_window_t *xxx4_osm;
+static __thread xxx4_osm_render_window_t *xxx4_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static char xxx4_no_render_buffer[4];
