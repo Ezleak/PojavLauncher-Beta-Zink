@@ -84,7 +84,11 @@ void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
     if (!hasCleaned)
     {
         printf("OSMDroid: making current\n");
-        xxx4_osm->nativeSurface = pojav_environ->pojavWindow;
+        pojav_environ->mainWindowBundle = (basic_render_window_t*) bundle;
+        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        // xxx4_osm->nativeSurface = pojav_environ->pojavWindow;
+        xxx4_osm->nativeSurface = pojav_environ->mainWindowBundle->newNativeSurface;
+        pojav_environ->mainWindowBundle->newNativeSurface = NILL;
         ANativeWindow_acquire(xxx4_osm->nativeSurface);
         ANativeWindow_setBuffersGeometry(xxx4_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBX_8888);
         ANativeWindow_lock(xxx4_osm->nativeSurface, &xxx4_osm->buffer, NULL);

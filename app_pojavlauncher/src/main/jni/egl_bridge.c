@@ -391,7 +391,7 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
         xxx3OsmMakeCurrent(window);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4_osm_make_current(window);
+        xxx4_osm_make_current((basic_render_window_t*)window);
 
 }
 
@@ -412,7 +412,7 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
         return xxx3OsmCreateContext(contextSrc);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        return xxx4_osm_create_context(contextSrc);
+        return xxx4_osm_create_context((basic_render_window_t*)contextSrc);
 
     return br_init_context((basic_render_window_t*)contextSrc);
 }
