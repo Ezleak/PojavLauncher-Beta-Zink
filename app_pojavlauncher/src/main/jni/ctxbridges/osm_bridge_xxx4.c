@@ -115,7 +115,7 @@ int xxx4OsmInit() {
     if (pojav_environ->config_bridge != BRIDGE_TBL_XXX4)
         return 0;
 
-    xxx4_osm_render_window_t* render_window = malloc(sizeof(xxx4_osm_render_window_t));
+    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(xxx4_osm_render_window_t));
     if (render_window == NULL) return NULL;
     memset(render_window, 0, sizeof(xxx4_osm_render_window_t));
 
