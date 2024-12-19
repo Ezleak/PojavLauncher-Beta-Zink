@@ -34,11 +34,16 @@ xxx4_osm_render_window_t* xxx4OsmGetCurrentContext() {
     return xxx4_osm;
 }
 
-void xxx4OsmloadSymbols() {
+bool xxx4OsmloadSymbols() {
     dlsym_OSMesa();
+    return true;
 }
 
 xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) {
+    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(xxx4_osm_render_window_t));
+    if (xxx4_osm == NULL) return NULL;
+    memset(xxx4_osm, 0, sizeof(xxx4_osm_render_window_t));
+
     printf("OSMDroid: generating context\n");
     OSMesaContext osmesa_share = NULL;
     if (share != NULL) osmesa_share = share->context;
@@ -109,15 +114,4 @@ void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
 void xxx4OsmSwapInterval(int interval) {
     if (xxx4_osm->nativeSurface != NULL)
         setNativeWindowSwapInterval(xxx4_osm->nativeSurface, interval);
-}
-
-int xxx4OsmInit() {
-    if (pojav_environ->config_bridge != BRIDGE_TBL_XXX4)
-        return 0;
-
-    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(xxx4_osm_render_window_t));
-    if (xxx4_osm == NULL) return NULL;
-    memset(xxx4_osm, 0, sizeof(xxx4_osm_render_window_t));
-
-    return 0;
 }

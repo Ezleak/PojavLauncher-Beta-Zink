@@ -155,7 +155,7 @@ EXTERNAL_API void* pojavGetCurrentContext() {
         return xxx3OsmGetCurrentContext();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        return xxx4OsmGetCurrentContext();
+        return xxx4_osm_get_current();
 
     return br_get_current();
 }
@@ -211,12 +211,13 @@ void renderer_load_config() {
         } break;
         case BRIDGE_TBL_XXX4: {
             pojav_environ->config_renderer = RENDERER_VK_ZINK_XXX4;
-            xxx4OsmInit();
-            xxx4OsmloadSymbols();
+            osm_bridge_xxx4();
+            xxx4_osm_load_symbols();
         } break;
-        default:
+        default: {
+            pojav_environ->config_renderer = RENDERER_VK_ZINK;
             set_osm_bridge_tbl();
-            break;
+        } break;
     }
 }
 
@@ -359,7 +360,7 @@ EXTERNAL_API void pojavSwapBuffers() {
         xxx3OsmSwapBuffers();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4OsmSwapBuffers();
+        xxx4_osm_swap_buffers();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
         br_swap_buffers();
@@ -389,7 +390,7 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
         xxx3OsmMakeCurrent(window);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4OsmMakeCurrent(window);
+        xxx4_osm_make_current(window);
 
 }
 
@@ -410,7 +411,7 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
         return xxx3OsmCreateContext(contextSrc);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        return xxx4OsmCreateContext(contextSrc);
+        return xxx4_osm_create_context(contextSrc);
 
     return br_init_context((basic_render_window_t*)contextSrc);
 }
@@ -487,7 +488,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
         xxx3OsmSwapInterval(interval);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4OsmSwapInterval(interval);
+        xxx4_osm_swap_interval(interval);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
     {
