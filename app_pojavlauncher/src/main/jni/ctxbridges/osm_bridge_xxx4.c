@@ -116,8 +116,8 @@ int xxx4OsmInit() {
         return 0;
 
     xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(xxx4_osm_render_window_t));
-    if (render_window == NULL) return NULL;
-    memset(render_window, 0, sizeof(xxx4_osm_render_window_t));
+    if (xxx4_osm == NULL) return NULL;
+    memset(xxx4_osm, 0, sizeof(xxx4_osm_render_window_t));
 
     return 0;
 }
