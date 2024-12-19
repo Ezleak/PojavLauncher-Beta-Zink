@@ -17,6 +17,12 @@ typedef struct {
     void* window;
 } xxx4_osm_render_window_t;
 
+extern bool (*xxx4_osm_load_symbols)();
+extern xxx4_osm_render_window_t* (*xxx4_osm_get_current)();
+extern xxx4_osm_render_window_t* (*xxx4_osm_create_context)(xxx4_osm_render_window_t* share);
+extern void (*xxx4_osm_swap_buffers)();
+extern void (*xxx4_osm_make_current)(xxx4_osm_render_window_t* bundle);
+extern void (*xxx4_osm_swap_interval)(int interval);
 
 void osm_bridge_xxx4() {
     xxx4_osm_load_symbols = xxx4OsmloadSymbols;
