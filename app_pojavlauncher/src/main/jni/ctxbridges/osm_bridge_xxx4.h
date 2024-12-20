@@ -9,19 +9,19 @@
 #include <android/native_window_jni.h>
 #include "osmesa_loader.h"
 
-struct xxx4_osm_render_window_t {
+typedef struct {
     struct ANativeWindow *nativeSurface;
     ANativeWindow_Buffer buffer;
     OSMesaContext context;
     int32_t last_stride;
-    void* window;
-};
+    // void* window;
+} xxx4_osm_render_window_t;
 
 bool xxx4OsmloadSymbols();
-void* xxx4OsmGetCurrentContext();
-void* xxx4OsmCreateContext(void* contextSrc);
+xxx4_osm_render_window_t* xxx4OsmGetCurrentContext();
+xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t* contextSrc);
 void xxx4OsmSwapBuffers();
-void xxx4OsmMakeCurrent(void* window);
+void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* window);
 void xxx4OsmSwapInterval(int interval);
 
 #endif //OSM_BRIDGE_XXX4_H

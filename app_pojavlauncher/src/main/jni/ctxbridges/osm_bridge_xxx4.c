@@ -16,7 +16,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-static struct xxx4_osm_render_window_t *xxx4_osm;
+static __thread xxx4_osm_render_window_t *xxx4_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static char xxx4_no_render_buffer[4];
@@ -30,7 +30,7 @@ void xxx4_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->stride = 0;
 }
 
-void* xxx4OsmGetCurrentContext() {
+xxx4_osm_render_window_t* xxx4OsmGetCurrentContext() {
     return xxx4_osm;
 }
 
@@ -39,10 +39,10 @@ bool xxx4OsmloadSymbols() {
     return true;
 }
 
-void* xxx4OsmCreateContext(void* contextSrc) {
-    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
-    if (xxx4_osm == NULL) return NULL;
-    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
+xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t* contextSrc) {
+    xxx4_osm_render_window_t* xxx4_osm_render_window = malloc(sizeof(xxx4_osm_render_window_t));
+    if (xxx4_osm_render_window == NULL) return NULL;
+    memset(xxx4_osm_render_window, 0, sizeof(xxx4_osm_render_window_t));
 
     printf("OSMDroid: generating context\n");
 
@@ -52,13 +52,13 @@ void* xxx4OsmCreateContext(void* contextSrc) {
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
     if (context == NULL)
     {
-        free(xxx4_osm);
+        free(xxx4_osm_render_window);
         return NULL;
     }
 
-    xxx4_osm->context = context;
+    xxx4_osm_render_window->context = context;
     printf("OSMDroid: context=%p\n", context);
-    return xxx4_osm;
+    return xxx4_osm_render_window;
 }
 
 void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {   
@@ -75,7 +75,7 @@ void xxx4OsmSwapBuffers() {
     ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
 }
 
-void xxx4OsmMakeCurrent(void* window) {
+void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* window) {
     if (window == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
