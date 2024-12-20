@@ -52,7 +52,7 @@ void xxx2_osm_apply_current(ANativeWindow_Buffer* buf) {
         abuffer = malloc(buf->width * buf->height * 4);
     }
 
-    OSMesaMakeCurrent_p(xxx2_osm->context, abuffer, GL_UNSIGNED_BYTE, buf->width, buf->height);
+    OSMesaMakeCurrent_p(xxx2_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx2_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     xxx2_osm->last_stride = buf->stride;
