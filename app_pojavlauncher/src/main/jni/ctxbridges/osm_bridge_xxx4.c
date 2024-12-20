@@ -66,7 +66,7 @@ void xxx4_osm_apply_current_l(ANativeWindow_Buffer* buf) {
 }
 
 void xxx4_osm_apply_current_ll(ANativeWindow_Buffer* buf) {
-    OSMesaMakeCurrent_p(xxx4_osm->window, setbuffer, GL_UNSIGNED_BYTE, buf->width, buf->height);
+    OSMesaMakeCurrent_p((OSMesaContext)xxx4_osm->window, setbuffer, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx4_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     xxx4_osm->last_stride = buf->stride;
