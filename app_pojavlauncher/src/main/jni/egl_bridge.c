@@ -191,7 +191,7 @@ void renderer_load_config() {
         } break;
         case BRIDGE_TBL_XXX2: {
             pojav_environ->config_renderer = RENDERER_VK_ZINK_XXX2;
-            xxx2OsmInit();
+            // xxx2OsmInit();
             xxx2OsmloadSymbols();
         } break;
         case BRIDGE_TBL_XXX3:
