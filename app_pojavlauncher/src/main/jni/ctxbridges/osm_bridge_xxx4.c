@@ -58,8 +58,15 @@ void* xxx4OsmCreateContext(void* contextSrc) {
     return context;
 }
 
-void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
+void xxx4_osm_apply_current_l(ANativeWindow_Buffer* buf) {
     OSMesaMakeCurrent_p(xxx4_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
+    if (buf->stride != xxx4_osm->last_stride)
+        OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
+    xxx4_osm->last_stride = buf->stride;
+}
+
+void xxx4_osm_apply_current_ll(ANativeWindow_Buffer* buf) {
+    OSMesaMakeCurrent_p(xxx4_osm->window, setbuffer, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx4_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     xxx4_osm->last_stride = buf->stride;
@@ -67,7 +74,7 @@ void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
 
 void xxx4OsmSwapBuffers() {
     ANativeWindow_lock(xxx4_osm->nativeSurface, &xxx4_osm->buffer, NULL);
-    xxx4_osm_apply_current(&xxx4_osm->buffer);
+    xxx4_osm_apply_current_l(&xxx4_osm->buffer);
     glFinish_p();
     ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
 }
@@ -79,7 +86,7 @@ void xxx4OsmMakeCurrent(void* window) {
         xxx4_osm = NULL;
         return;
     }
-    // xxx4_osm->window = window;
+    xxx4_osm->window = window;
 
     if (!hasCleaned)
     {
@@ -96,7 +103,7 @@ void xxx4OsmMakeCurrent(void* window) {
         xxx4_osm_set_no_render_buffer(&xxx4_osm->buffer);
     }
 
-    xxx4_osm_apply_current(&xxx4_osm->buffer);
+    xxx4_osm_apply_current_ll(&xxx4_osm->buffer);
 
     if (!hasCleaned)
     {
