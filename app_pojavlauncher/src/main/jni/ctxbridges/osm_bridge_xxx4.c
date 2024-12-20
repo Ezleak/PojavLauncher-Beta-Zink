@@ -47,9 +47,8 @@ void* xxx4OsmCreateContext(void* contextSrc) {
 
     printf("OSMDroid: generating context\n");
 
-    void* context = NULL;
     if (contextSrc != NULL)
-        context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
+        OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
 
     if (context == NULL)
     {
@@ -57,7 +56,7 @@ void* xxx4OsmCreateContext(void* contextSrc) {
         return NULL;
     }
 
-    xxx4_osm->context = (OSMesaContext)context;
+    xxx4_osm->context = context;
     printf("OSMDroid: context=%p\n", context);
 
     return context;
