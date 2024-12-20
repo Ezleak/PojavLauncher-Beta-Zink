@@ -16,7 +16,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-static __thread xxx2_osm_render_window_t *xxx2_osm;
+static struct xxx2_osm_render_window_t *xxx2_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static bool swapSurface = false;
@@ -34,39 +34,52 @@ void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->stride = 0;
 }
 
-xxx2_osm_render_window_t* xxx2OsmGetCurrentContext() {
-    return xxx2_osm->context;
-}
-
 bool xxx2OsmloadSymbols() {
     dlsym_OSMesa();
     return true;
 }
 
-void xxx2_osm_apply_current(ANativeWindow_Buffer* buf) {
-    if (swapSurface)
+void* xxx2OsmGetCurrentContext() {
+    return xxx2_osm->context;
+}
+
+void* xxx2OsmCreateContext(void* contextSrc) {
+
+    xxx2_osm = malloc(sizeof(struct xxx2_osm_render_window_t));
+    if (!xxx2_osm)
     {
-        xxx2_osm->context = OSMesaGetCurrentContext_p();
-        abuffer = buf->bits;
-    } else {
-        abuffer = malloc(buf->width * buf->height * 4);
+        printf("%s Failed to allocate memory for xxx2_osm\n", osm_LogTag);
+        return NULL;
+    }
+    memset(xxx2_osm, 0, sizeof(struct xxx2_osm_render_window_t));
+
+    printf("%s generating context\n", osm_LogTag);
+
+    OSMesaContext osmesa_share = NULL;
+    if (contextSrc != NULL) osmesa_share = contextSrc;
+
+    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
+    if (context == NULL) {
+        printf("%s OSMesaContext is Null!!!\n", osm_LogTag);
+        return NULL;
     }
 
+    xxx2_osm->context = context;
+    printf("%s context = %p\n", osm_LogTag, context);
+
+    return context;
+}
+
+
+void xxx2_osm_apply_current(ANativeWindow_Buffer* buf) {
+    if (swapSurface) xxx2_osm->context = OSMesaGetCurrentContext_p();
     OSMesaMakeCurrent_p(xxx2_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx2_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
     xxx2_osm->last_stride = buf->stride;
 }
 
-void xxx2OsmSwapBuffers() {
-    if (!swapSurface) swapSurface = true;
-    ANativeWindow_lock(xxx2_osm->nativeSurface, &xxx2_osm->buffer, NULL);
-    xxx2_osm_apply_current(&xxx2_osm->buffer);
-    glFinish_p();
-    ANativeWindow_unlockAndPost(xxx2_osm->nativeSurface);
-}
-
-void xxx2OsmMakeCurrent(xxx2_osm_render_window_t* window) {
+void xxx2OsmMakeCurrent(void* window) {
     if (!hasCleaned)
     {
         printf("%s making current\n", osm_LogTag);
@@ -100,31 +113,12 @@ void xxx2OsmMakeCurrent(xxx2_osm_render_window_t* window) {
     }
 }
 
-xxx2_osm_render_window_t* xxx2OsmCreateContext(xxx2_osm_render_window_t* contextSrc) {
-
-    xxx2_osm_render_window_t* xxx2_osm_render_window = malloc(sizeof(xxx2_osm_render_window_t));
-    if (xxx2_osm_render_window == NULL)
-    {
-        printf("%s Failed to allocate memory for xxx2_osm\n", osm_LogTag);
-        return NULL;
-    }
-    memset(xxx2_osm_render_window, 0, sizeof(xxx2_osm_render_window_t));
-
-    printf("%s generating context\n", osm_LogTag);
-
-    OSMesaContext osmesa_share = NULL;
-    if (contextSrc != NULL) osmesa_share = contextSrc;
-
-    OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
-    if (context == NULL) {
-        printf("%s OSMesaContext is Null!!!\n", osm_LogTag);
-        return NULL;
-    }
-
-    xxx2_osm_render_window->context = context;
-    printf("%s context = %p\n", osm_LogTag, context);
-
-    return context;
+void xxx2OsmSwapBuffers() {
+    if (!swapSurface) swapSurface = true;
+    ANativeWindow_lock(xxx2_osm->nativeSurface, &xxx2_osm->buffer, NULL);
+    xxx2_osm_apply_current(&xxx2_osm->buffer);
+    glFinish_p();
+    ANativeWindow_unlockAndPost(xxx2_osm->nativeSurface);
 }
 
 void xxx2OsmSwapInterval(int interval) {
