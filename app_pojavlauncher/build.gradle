@@ -129,7 +129,7 @@ android {
 
     defaultConfig {
         applicationId "net.kdt.pojavlaunch.firefly"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 28
         versionCode getDateSeconds()
         versionName getVersionName()
