@@ -35,7 +35,6 @@
 #include "ctxbridges/osm_bridge_xxx2.h"
 #include "ctxbridges/osm_bridge_xxx3.h"
 #include "ctxbridges/osm_bridge_xxx4.h"
-#include "ctxbridges/xxx4_osm.h"
 #include "ctxbridges/renderer_config.h"
 #include "ctxbridges/virgl_bridge.h"
 #include "driver_helper/nsbypass.h"
@@ -156,7 +155,7 @@ EXTERNAL_API void* pojavGetCurrentContext() {
         return xxx3OsmGetCurrentContext();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        return xxx4_osm_get_current();
+        return xxx4OsmGetCurrentContext();
 
     return br_get_current();
 }
@@ -212,8 +211,7 @@ void renderer_load_config() {
         } break;
         case BRIDGE_TBL_XXX4: {
             pojav_environ->config_renderer = RENDERER_VK_ZINK_XXX4;
-            osm_bridge_xxx4();
-            xxx4_osm_load_symbols();
+            xxx4OsmloadSymbols();
         } break;
         default: {
             pojav_environ->config_renderer = RENDERER_VK_ZINK;
@@ -361,7 +359,7 @@ EXTERNAL_API void pojavSwapBuffers() {
         xxx3OsmSwapBuffers();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4_osm_swap_buffers();
+        xxx4OsmSwapBuffers();
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
         br_swap_buffers();
@@ -391,7 +389,7 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
         xxx3OsmMakeCurrent(window);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4_osm_make_current((basic_render_window_t*)window);
+        xxx4OsmMakeCurrent(window);
 
 }
 
@@ -412,7 +410,7 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
         return xxx3OsmCreateContext(contextSrc);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        return xxx4_osm_create_context((basic_render_window_t*)contextSrc);
+        return xxx4OsmCreateContext(contextSrc);
 
     return br_init_context((basic_render_window_t*)contextSrc);
 }
@@ -489,7 +487,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
         xxx3OsmSwapInterval(interval);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
-        xxx4_osm_swap_interval(interval);
+        xxx4OsmSwapInterval(interval);
 
     if (pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1)
     {
