@@ -16,12 +16,12 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-static struct xxx2_osm_render_window_t *xxx2_osm;
+static __thread xxx2_osm_render_window_t *xxx2_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static bool swapSurface = false;
 static char xxx2_no_render_buffer[4];
-static const char* osm_LogTag = "[ XXX2 OSM Bridge ] ";
+static const char* osm_LogTag = "[ XXX2 OSM Bridge ]";
 
 void* abuffer;
 
@@ -34,7 +34,7 @@ void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->stride = 0;
 }
 
-void *xxx2OsmGetCurrentContext() {
+xxx2_osm_render_window_t* xxx2OsmGetCurrentContext() {
     return xxx2_osm->context;
 }
 
@@ -66,7 +66,7 @@ void xxx2OsmSwapBuffers() {
     ANativeWindow_unlockAndPost(xxx2_osm->nativeSurface);
 }
 
-void xxx2OsmMakeCurrent(void *window) {
+void xxx2OsmMakeCurrent(xxx2_osm_render_window_t* window) {
     if (!hasCleaned)
     {
         printf("%s making current\n", osm_LogTag);
@@ -100,7 +100,16 @@ void xxx2OsmMakeCurrent(void *window) {
     }
 }
 
-void *xxx2OsmCreateContext(void *contextSrc) {
+xxx2_osm_render_window_t* xxx2OsmCreateContext(xxx2_osm_render_window_t* contextSrc) {
+
+    xxx2_osm_render_window_t* xxx2_osm_render_window = malloc(sizeof(xxx2_osm_render_window_t));
+    if (xxx2_osm_render_window == NULL)
+    {
+        printf("%s Failed to allocate memory for xxx2_osm\n", osm_LogTag);
+        return NULL;
+    }
+    memset(xxx2_osm_render_window, 0, sizeof(xxx2_osm_render_window_t));
+
     printf("%s generating context\n", osm_LogTag);
 
     OSMesaContext osmesa_share = NULL;
@@ -112,7 +121,7 @@ void *xxx2OsmCreateContext(void *contextSrc) {
         return NULL;
     }
 
-    xxx2_osm->context = context;
+    xxx2_osm_render_window->context = context;
     printf("%s context = %p\n", osm_LogTag, context);
 
     return context;
@@ -121,18 +130,4 @@ void *xxx2OsmCreateContext(void *contextSrc) {
 void xxx2OsmSwapInterval(int interval) {
     if (xxx2_osm->nativeSurface != NULL)
         setNativeWindowSwapInterval(xxx2_osm->nativeSurface, interval);
-}
-
-int xxx2OsmInit() {
-    if (pojav_environ->config_bridge != BRIDGE_TBL_XXX2)
-        return 0;
-
-    xxx2_osm = malloc(sizeof(struct xxx2_osm_render_window_t));
-    if (!xxx2_osm) {
-        printf("%s Failed to allocate memory for xxx2_osm\n", osm_LogTag);
-        return -1;
-    }
-    memset(xxx2_osm, 0, sizeof(struct xxx2_osm_render_window_t));
-
-    return 0;
 }
