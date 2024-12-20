@@ -17,7 +17,6 @@
 #include "renderer_config.h"
 
 static struct xxx4_osm_render_window_t *xxx4_osm;
-static bool swapBuffers = false;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static char xxx4_no_render_buffer[4];
@@ -32,7 +31,7 @@ void xxx4_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
 }
 
 void* xxx4OsmGetCurrentContext() {
-    return xxx4_osm->context;
+    return xxx4_osm;
 }
 
 bool xxx4OsmloadSymbols() {
@@ -57,13 +56,12 @@ void* xxx4OsmCreateContext(void* contextSrc) {
         return NULL;
     }
 
+    xxx4_osm->context = context;
     printf("OSMDroid: context=%p\n", context);
-    return context;
+    return xxx4_osm;
 }
 
 void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {   
-    if (swapBuffers)
-        xxx4_osm->context = OSMesaGetCurrentContext_p();
     OSMesaMakeCurrent_p(xxx4_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
     if (buf->stride != xxx4_osm->last_stride)
         OSMesaPixelStore_p(OSMESA_ROW_LENGTH, buf->stride);
@@ -71,7 +69,6 @@ void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
 }
 
 void xxx4OsmSwapBuffers() {
-    if (!swapBuffers) swapBuffers = true;
     ANativeWindow_lock(xxx4_osm->nativeSurface, &xxx4_osm->buffer, NULL);
     xxx4_osm_apply_current(&xxx4_osm->buffer);
     glFinish_p();
@@ -86,13 +83,14 @@ void xxx4OsmMakeCurrent(void* window) {
         return;
     }
 
+    xxx4_osm = window;
+
     if (!hasCleaned)
     {
         printf("OSMDroid: making current\n");
         xxx4_osm->nativeSurface = pojav_environ->pojavWindow;
         ANativeWindow_acquire(xxx4_osm->nativeSurface);
         ANativeWindow_setBuffersGeometry(xxx4_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBX_8888);
-        ANativeWindow_lock(xxx4_osm->nativeSurface, &xxx4_osm->buffer, NULL);
     }
 
     if (!hasSetNoRendererBuffer)
@@ -102,7 +100,6 @@ void xxx4OsmMakeCurrent(void* window) {
     }
 
     swapBuffers = false;
-    xxx4_osm->context = (OSMesaContext)window;
     xxx4_osm_apply_current(&xxx4_osm->buffer);
 
     if (!hasCleaned)
@@ -113,7 +110,6 @@ void xxx4OsmMakeCurrent(void* window) {
         printf("OSMDroid: vendor: %s\n", glGetString_p(GL_VENDOR));
         printf("OSMDroid: renderer: %s\n", glGetString_p(GL_RENDERER));
         glClear_p(GL_COLOR_BUFFER_BIT);
-        ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
     }
 }
 
