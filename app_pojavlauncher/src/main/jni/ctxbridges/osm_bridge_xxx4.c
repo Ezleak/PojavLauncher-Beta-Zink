@@ -16,7 +16,7 @@
 #include "osmesa_loader.h"
 #include "renderer_config.h"
 
-static __thread xxx4_osm_render_window_t *xxx4_osm;
+static xxx4_osm_render_window_t *xxx4_osm;
 static bool hasCleaned = false;
 static bool hasSetNoRendererBuffer = false;
 static char xxx4_no_render_buffer[4];
@@ -31,7 +31,7 @@ void xxx4_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
 }
 
 xxx4_osm_render_window_t* xxx4OsmGetCurrentContext() {
-    return xxx4_osm;
+    return xxx4_osm->context;
 }
 
 bool xxx4OsmloadSymbols() {
@@ -39,14 +39,14 @@ bool xxx4OsmloadSymbols() {
     return true;
 }
 
-xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) {
-    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(xxx4_osm_render_window_t));
+void* xxx4OsmCreateContext(void* contextSrc) {
+    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
     if (xxx4_osm == NULL) return NULL;
-    memset(xxx4_osm, 0, sizeof(xxx4_osm_render_window_t));
+    memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
 
     printf("OSMDroid: generating context\n");
     OSMesaContext osmesa_share = NULL;
-    if (share != NULL) osmesa_share = share->context;
+    if (contextSrc != NULL) osmesa_share = contextSrc;
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
     if (context == NULL)
     {
@@ -55,7 +55,7 @@ xxx4_osm_render_window_t* xxx4OsmCreateContext(xxx4_osm_render_window_t *share) 
     }
     xxx4_osm->context = context;
     printf("OSMDroid: context=%p\n", context);
-    return xxx4_osm;
+    return context;
 }
 
 void xxx4_osm_apply_current(ANativeWindow_Buffer* buf) {
@@ -72,14 +72,14 @@ void xxx4OsmSwapBuffers() {
     ANativeWindow_unlockAndPost(xxx4_osm->nativeSurface);
 }
 
-void xxx4OsmMakeCurrent(xxx4_osm_render_window_t* bundle) {
+void xxx4OsmMakeCurrent(void* window) {
     if (bundle == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
         xxx4_osm = NULL;
         return;
     }
-    xxx4_osm = bundle;
+    // xxx4_osm->window = window;
 
     if (!hasCleaned)
     {
