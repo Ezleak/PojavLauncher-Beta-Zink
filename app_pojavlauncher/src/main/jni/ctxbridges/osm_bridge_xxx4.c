@@ -99,7 +99,6 @@ void xxx4OsmMakeCurrent(void* window) {
         xxx4_osm_set_no_render_buffer(&xxx4_osm->buffer);
     }
 
-    swapBuffers = false;
     xxx4_osm_apply_current(&xxx4_osm->buffer);
 
     if (!hasCleaned)
