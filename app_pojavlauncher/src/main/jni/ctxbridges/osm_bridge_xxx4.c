@@ -30,7 +30,7 @@ void xxx4_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->stride = 0;
 }
 
-xxx4_osm_render_window_t* xxx4OsmGetCurrentContext() {
+void* xxx4OsmGetCurrentContext() {
     return xxx4_osm->context;
 }
 
@@ -40,7 +40,7 @@ bool xxx4OsmloadSymbols() {
 }
 
 void* xxx4OsmCreateContext(void* contextSrc) {
-    xxx4_osm_render_window_t* xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
+    xxx4_osm = malloc(sizeof(struct xxx4_osm_render_window_t));
     if (xxx4_osm == NULL) return NULL;
     memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
 
@@ -73,7 +73,7 @@ void xxx4OsmSwapBuffers() {
 }
 
 void xxx4OsmMakeCurrent(void* window) {
-    if (bundle == NULL)
+    if (window == NULL)
     {
         OSMesaMakeCurrent_p(NULL, NULL, 0, 0, 0);
         xxx4_osm = NULL;
