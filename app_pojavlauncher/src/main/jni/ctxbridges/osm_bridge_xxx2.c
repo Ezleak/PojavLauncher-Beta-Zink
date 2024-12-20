@@ -23,6 +23,8 @@ static bool swapSurface = false;
 static char xxx2_no_render_buffer[4];
 static const char* osm_LogTag = "[ XXX2 OSM Bridge ]";
 
+void* abuffer;
+
 void setNativeWindowSwapInterval(struct ANativeWindow* nativeWindow, int swapInterval);
 
 void xxx2_osm_set_no_render_buffer(ANativeWindow_Buffer* buf) {
