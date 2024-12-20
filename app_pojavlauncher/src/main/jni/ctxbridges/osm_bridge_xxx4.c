@@ -46,11 +46,10 @@ void* xxx4OsmCreateContext(void* contextSrc) {
     memset(xxx4_osm, 0, sizeof(struct xxx4_osm_render_window_t));
 
     printf("OSMDroid: generating context\n");
+
     void* context = NULL;
     if (contextSrc != NULL)
-    {
         context = OSMesaCreateContext_p(OSMESA_RGBA, contextSrc);
-    }
 
     if (context == NULL)
     {
@@ -104,7 +103,7 @@ void xxx4OsmMakeCurrent(void* window) {
 
     swapBuffers = false;
     xxx4_osm->context = (OSMesaContext)window;
-    xxx4_osm_apply_current_ll(&xxx4_osm->buffer);
+    xxx4_osm_apply_current(&xxx4_osm->buffer);
 
     if (!hasCleaned)
     {
