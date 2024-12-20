@@ -59,6 +59,7 @@ void xxx2_osm_apply_current(ANativeWindow_Buffer* buf) {
 }
 
 void xxx2OsmSwapBuffers() {
+    if (!swapSurface) swapSurface = true;
     ANativeWindow_lock(xxx2_osm->nativeSurface, &xxx2_osm->buffer, NULL);
     xxx2_osm_apply_current(&xxx2_osm->buffer);
     glFinish_p();
