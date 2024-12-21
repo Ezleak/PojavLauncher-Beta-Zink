@@ -80,8 +80,8 @@ void* xxx4OsmCreateContext(void* contextSrc) {
 void xxx4OsmMakeCurrent(void *window) {
     printf("OSMDroid: making current\n");
         AHardwareBuffer_Desc desc = {
-            xxx4_osm->width,
-            xxx4_osm->height,
+            width,
+            height,
             1,
             AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM,
             AHARDWAREBUFFER_USAGE_CPU_READ_NEVER
@@ -96,8 +96,8 @@ void xxx4OsmMakeCurrent(void *window) {
         xxx4_osm->desc = desc;
     get_desc(&desc);
     void* ptr = share_lock();
-    OSMesaMakeCurrent_p(xxx4_osm->context, ptr, GL_UNSIGNED_BYTE, xxx4_osm->width, xxx4_osm->height);
-    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, xxx4_osm->width * 4);
+    OSMesaMakeCurrent_p(xxx4_osm->context, ptr, GL_UNSIGNED_BYTE, width, height);
+    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, width * 4);
     OSMesaPixelStore_p(OSMESA_Y_UP, 0);
     glClear_p(GL_COLOR_BUFFER_BIT);
     glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
@@ -108,7 +108,7 @@ void xxx4OsmSwapBuffers() {
     AHardwareBuffer_Desc desc;
     get_desc(&desc);
     void* ptr = share_lock();
-    OSMesaMakeCurrent_p(xxx4_osm->context, ptr, GL_UNSIGNED_BYTE, xxx4_osm->width, xxx4_osm->height);
+    OSMesaMakeCurrent_p(xxx4_osm->context, ptr, GL_UNSIGNED_BYTE, width, height);
     OSMesaPixelStore_p(OSMESA_ROW_LENGTH, desc.stride);
     glFinish_p();
     share_unlock();
