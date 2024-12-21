@@ -97,8 +97,8 @@ void xxx4OsmMakeCurrent(void *window) {
     get_desc(&desc);
     void* ptr = share_lock();
     OSMesaMakeCurrent_p(xxx4_osm->context, ptr, GL_UNSIGNED_BYTE, xxx4_osm->width, xxx4_osm->height);
-    // OSMesaPixelStore_p(OSMESA_ROW_LENGTH, desc.stride);
-    // OSMesaPixelStore_p(OSMESA_Y_UP, 0);
+    OSMesaPixelStore_p(OSMESA_ROW_LENGTH, xxx4_osm->width * 4);
+    OSMesaPixelStore_p(OSMESA_Y_UP, 0);
     glClear_p(GL_COLOR_BUFFER_BIT);
     glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
     share_unlock();
