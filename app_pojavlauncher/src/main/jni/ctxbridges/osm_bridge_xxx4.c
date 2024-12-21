@@ -67,12 +67,12 @@ void* xxx4OsmCreateContext(void* contextSrc) {
 
     OSMesaContext context = OSMesaCreateContext_p(OSMESA_RGBA, osmesa_share);
     if (context == NULL) {
-        printf("%s OSMesaContext is Null!!!\n", osm_LogTag);
+        printf("OSMDroid: OSMesaContext is Null!!!\n");
         return NULL;
     }
 
     xxx4_osm->context = context;
-    printf("%s context = %p\n", osm_LogTag, context);
+    printf("OSMDroid: context = %p\n", context);
 
     return context;
 }
