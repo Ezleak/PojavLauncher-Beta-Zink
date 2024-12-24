@@ -8,9 +8,21 @@ HERE_PATH := $(LOCAL_PATH)
 
 LOCAL_PATH := $(HERE_PATH)
 
-
 $(call import-module,prefab/bytehook)
 LOCAL_PATH := $(HERE_PATH)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := angle_gles2
+LOCAL_SRC_FILES := angle/angle-gles/$(TARGET_ARCH_ABI)/libGLESv2_angle.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := Angle
+LOCAL_SHARED_LIBRARIES := angle_gles2
+LOCAL_SRC_FILES := angle/main.c angle/string_utils.c
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/angle
+LOCAL_CFLAGS += -g -rdynamic
+include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 # Link GLESv2 for test
@@ -29,7 +41,6 @@ LOCAL_SRC_FILES := \
     ctxbridges/osm_bridge_xxx1.c \
     ctxbridges/osm_bridge_xxx2.c \
     ctxbridges/osm_bridge_xxx3.c \
-    ctxbridges/osm_bridge_xxx4.c \
     ctxbridges/egl_loader.c \
     ctxbridges/osmesa_loader.c \
     ctxbridges/swap_interval_no_egl.c \

@@ -30,8 +30,7 @@ void dlsym_OSMesa() {
      || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX1
      || pojav_environ->config_renderer == RENDERER_VIRGL
      || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX2
-     || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX3
-     || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX4)
+     || pojav_environ->config_renderer == RENDERER_VK_ZINK_XXX3)
     {
         if (strncmp(mesa_library, "/data", 5) == 0)
         {
