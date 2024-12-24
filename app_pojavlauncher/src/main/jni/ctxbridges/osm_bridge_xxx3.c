@@ -81,12 +81,7 @@ void xxx3OsmMakeCurrent(void* window) {
         printf("%s making current\n", osm_LogTag);
         xxx3_osm->nativeSurface = pojav_environ->pojavWindow;
         ANativeWindow_acquire(xxx3_osm->nativeSurface);
-        int result = ANativeWindow_setBuffersGeometry(xxx3_osm->nativeSurface, 0, 0, AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT);
-        if (result != 0)
-        {
-            printf("%s 64-bit color format not supported, switch to 32-bit\n", osm_LogTag);
-            ANativeWindow_setBuffersGeometry(xxx3_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBA_8888);
-        }
+        ANativeWindow_setBuffersGeometry(xxx3_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBA_8888);
         ANativeWindow_lock(xxx3_osm->nativeSurface, &xxx3_osm->buffer, NULL);
     }
 
