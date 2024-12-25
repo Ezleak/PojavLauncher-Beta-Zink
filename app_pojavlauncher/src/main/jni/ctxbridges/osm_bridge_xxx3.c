@@ -81,7 +81,7 @@ void xxx3OsmMakeCurrent(void* window) {
         printf("%s making current\n", osm_LogTag);
         xxx3_osm->nativeSurface = pojav_environ->pojavWindow;
         ANativeWindow_acquire(xxx3_osm->nativeSurface);
-        ANativeWindow_setBuffersGeometry(xxx3_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBA_8888);
+        ANativeWindow_setBuffersGeometry(xxx3_osm->nativeSurface, 0, 0, WINDOW_FORMAT_RGBX_8888);
         ANativeWindow_lock(xxx3_osm->nativeSurface, &xxx3_osm->buffer, NULL);
     }
 
@@ -116,5 +116,5 @@ void xxx3OsmSwapInterval(int interval) {
     if (!getenv("POJAV_VSYNC_IN_ZINK")) return;
 
     if (xxx3_osm->nativeSurface != NULL)
-        setNativeWindowSwapInterval(pojav_environ->pojavWindow, interval);
+        setNativeWindowSwapInterval(xxx3_osm->nativeSurface, interval);
 }
