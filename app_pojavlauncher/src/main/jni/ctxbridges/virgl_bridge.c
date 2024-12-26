@@ -219,7 +219,7 @@ void *virglGetCurrentContext() {
 }
 
 void virgl_apply_current(ANativeWindow_Buffer* buf) {
-    OSMesaMakeCurrent_p(xxx3_osm->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
+    OSMesaMakeCurrent_p(virgl_bridge->context, buf->bits, GL_UNSIGNED_BYTE, buf->width, buf->height);
 }
 
 void virglMakeCurrent(void *window) {
