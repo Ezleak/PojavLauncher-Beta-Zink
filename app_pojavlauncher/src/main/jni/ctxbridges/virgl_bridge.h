@@ -13,8 +13,6 @@ struct virgl_render_window_t {
     struct ANativeWindow *nativeSurface;
     ANativeWindow_Buffer buffer;
     OSMesaContext context;
-    int32_t last_stride;
-    void* window;
 };
 
 bool loadSymbolsVirGL();

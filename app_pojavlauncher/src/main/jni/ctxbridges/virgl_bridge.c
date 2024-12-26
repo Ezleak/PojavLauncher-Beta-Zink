@@ -28,7 +28,6 @@ void virgl_set_no_render_buffer(ANativeWindow_Buffer* buf) {
     buf->bits = &virgl_no_render_buffer;
     buf->width = pojav_environ->savedWidth;
     buf->height = pojav_environ->savedHeight;
-    buf->stride = 0;
 }
 
 void *egl_make_current(void *window) {
@@ -189,7 +188,7 @@ int virglInit() {
         gbuffer = calloc(pojav_environ->savedWidth *4, pojav_environ->savedHeight +1);
 
     #else
-        printf("[WORNING]: Macro FRAME_BUFFER_SUPPOST is undefined,defult to close\n");
+        printf("[WORNING]: Macro FRAME_BUFFER_SUPPOST is undefined, defult to close\n");
     #endif
 
     } else printf("OSMDroid: do not set frame buffer\n");
