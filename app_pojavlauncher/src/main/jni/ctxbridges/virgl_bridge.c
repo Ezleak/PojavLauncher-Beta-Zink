@@ -230,9 +230,9 @@ void virglMakeCurrent(void *window) {
 
     virgl_apply_current(&virgl_bridge->buffer);
 
-    if (!virgl_set_no_render_buffer)
+    if (!hasSetNoRendererBuffer)
     {
-        virgl_set_no_render_buffer = true;
+        hasSetNoRendererBuffer = true;
         printf("OSMDroid: vendor: %s\n",glGetString_p(GL_VENDOR));
         printf("OSMDroid: renderer: %s\n",glGetString_p(GL_RENDERER));
         glClear_p(GL_COLOR_BUFFER_BIT);
