@@ -667,7 +667,7 @@ public class JREUtils {
                     renderLibrary = "libOSMesa_2205.so";
                     break;
                 case "mesa2121":
-                    renderlLibrary = "libOSMesa_2121.so";
+                    renderLibrary = "libOSMesa_2121.so";
                     break;
                 default:
                     renderLibrary = MesaUtils.INSTANCE.getMesaLib(MESA_LIBS);
