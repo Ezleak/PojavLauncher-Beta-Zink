@@ -37,19 +37,25 @@ public class TurnipDownloader {
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-                    StringBuilder result = new StringBuilder();
-                    int byteRead;
-                    while ((byteRead = inputStream.read()) != -1) {
-                        result.append((char) byteRead);
-                    }
-                    inputStream.close();
+                try {
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+                        StringBuilder result = new StringBuilder();
+                        int byteRead;
+                        while ((byteRead = inputStream.read()) != -1) {
+                            result.append((char) byteRead);
+                        }
+                        inputStream.close();
 
-                    parseVersionList(result.toString());
-                    runOnMainThread(callback::onSuccess);
-                } else {
-                    runOnMainThread(() -> callback.onError("Failed to fetch version list: " + connection.getResponseCode()));
+                        parseVersionList(result.toString());
+                        runOnMainThread(callback::onSuccess);
+                    } else {
+                        runOnMainThread(() -> callback.onError("Failed to fetch version list: " + connection.getResponseCode()));
+                    }
+                } catch (Exception e) {
+                    // .e
+                } finally {
+                    connection.disconnect();
                 }
             } catch (Exception e) {
                 Log.e("TurnipDownloader", "Error fetching version list", e);
@@ -73,24 +79,30 @@ public class TurnipDownloader {
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream inputStream = connection.getInputStream();
-                    FileOutputStream outputStream = new FileOutputStream(destination);
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                    outputStream.close();
-                    inputStream.close();
+                try {
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        InputStream inputStream = connection.getInputStream();
+                        FileOutputStream outputStream = new FileOutputStream(destination);
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                        }
+                        outputStream.close();
+                        inputStream.close();
 
-                    runOnMainThread(callback::onSuccess);
-                } else {
-                    runOnMainThread(() -> callback.onError("Failed to download file: " + connection.getResponseCode()));
+                        runOnMainThread(callback::onSuccess);
+                    } else {
+                        runOnMainThread(() -> callback.onError("Failed to download file: " + connection.getResponseCode()));
+                    }
+                } catch (Exception e) {
+                    Log.e("TurnipDownloader", "Error downloading version file", e);
+                    runOnMainThread(() -> callback.onError("Error downloading file: " + e.getMessage()));
                 }
             } catch (Exception e) {
-                Log.e("TurnipDownloader", "Error downloading version file", e);
-                runOnMainThread(() -> callback.onError("Error downloading file: " + e.getMessage()));
+              // .e
+            } finally {
+                connection.disconnect();
             }
         }).start();
     }
