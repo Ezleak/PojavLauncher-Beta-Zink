@@ -65,7 +65,7 @@ public class ChooseTurnipListPref extends ListPreference {
         importButton.setText(R.string.pgw_settings_custom_turnip_creat);
 
         Button downloadButton = new Button(getContext());
-        downloadButton.setText("下载Turnip驱动");
+        downloadButton.setText(R.string.pgw_settings_ctu_download);
 
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
         buttonLayout.addView(importButton, buttonParams);

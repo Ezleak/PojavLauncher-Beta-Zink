@@ -145,7 +145,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
             return true;
         });
         CTurnipP.setImportButton(getString(R.string.pgw_settings_custom_turnip_creat), view -> handleFileSelection("ADD_TURNIP"));
-        CTurnipP.setDownloadButton("下载Turnip驱动", view -> loadTurnipList());
+        CTurnipP.setDownloadButton(R.string.pgw_settings_ctu_download, view -> loadTurnipList());
 
         CDriverModelP.setOnPreferenceChangeListener((pre, obj) -> {
             Tools.DRIVER_MODEL = (String) obj;
@@ -499,7 +499,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void loadTurnipList() {
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setMessage("正在加载Turnip驱动列表")
+                .setMessage(R.string.pgw_settings_ctu_dl_load)
                 .show();
         PojavApplication.sExecutorService.execute(() -> {
             Set<String> list = TurnipDownloader.getTurnipList(requireContext());
@@ -508,14 +508,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
                 if (list == null) {
                     AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
-                            .setMessage("列表获取失败")
+                            .setMessage(R.string.pgw_settings_ctu_dl_loadfail)
                             .create();
                     alertDialog1.show();
                 } else {
                     final String[] items = new String[list.size()];
                     list.toArray(items);
                     AlertDialog alertDialog2 = new AlertDialog.Builder(requireActivity())
-                            .setTitle(R.string.preference_rendererexp_mesa_select_download)
+                            .setTitle(R.string.pgw_settings_ctu_dl_ms)
                             .setItems(items, (dialogInterface, i) -> {
                                 if (i < 0 || i >= items.length)
                                     return;
@@ -531,7 +531,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void downloadTurnip(String version) {
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setMessage("正在下载")
+                .setMessage(R.string.pgw_settings_ctu_dl_downloading)
                 .setCancelable(false)
                 .show();
         PojavApplication.sExecutorService.execute(() -> {
@@ -541,16 +541,16 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 if (data) {
                     boolean success = TurnipDownloader.saveTurnipFile(requireContext(), version);
                     if (success) {
-                        Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), R.string.pgw_settings_ctu_saved, Toast.LENGTH_SHORT)
                                 .show();
                         setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
                     } else {
-                        Toast.makeText(requireContext(), "保存失败", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), R.string.pgw_settings_ctu_save_fail, Toast.LENGTH_SHORT)
                                 .show();
                     }
                 } else {
                     AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
-                            .setMessage("下载失败")
+                            .setMessage(R.string.pgw_settings_ctu_dl_failed)
                             .create();
                     alertDialog1.show();
                 }
