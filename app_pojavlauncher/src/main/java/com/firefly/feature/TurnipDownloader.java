@@ -224,7 +224,7 @@ public class TurnipDownloader {
         return success;
     }
 
-    private boolean copyFileToTurnipDir(File sourceFile, String folderName) {
+    private static boolean copyFileToTurnipDir(File sourceFile, String folderName) {
         File targetDir = new File(TurnipUtils.INSTANCE.getTurnipDir(), folderName);
         if (!targetDir.exists() && !targetDir.mkdirs()) {
             return false;
