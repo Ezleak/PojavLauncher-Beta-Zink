@@ -28,6 +28,10 @@ public class TurnipUtils {
         }
     }
 
+    public File getTurnipDir() {
+        return turnipDir;
+    }
+
     public List<String> getTurnipDriverList() {
         List<String> list = new ArrayList<>();
         File[] files = turnipDir.listFiles();

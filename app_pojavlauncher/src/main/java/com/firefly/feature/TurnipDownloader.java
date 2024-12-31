@@ -215,10 +215,11 @@ public class TurnipDownloader {
         String fileName = turnipName.get(tag);
         if (fileName == null) return false;
 
+        File turnipDir = new File(dir, version);
         File sourceFile = new File(turnipDir, fileName);
         boolean success = copyFileToTurnipDir(sourceFile, version);
 
-        deleteDirectory(sourceFile);
+        deleteDirectory(turnipDir);
 
         return success;
     }
