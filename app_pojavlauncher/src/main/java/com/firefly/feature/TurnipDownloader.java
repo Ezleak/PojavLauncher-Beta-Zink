@@ -3,6 +3,8 @@ package com.firefly.feature;
 import android.content.Context;
 import android.os.Environment;
 
+import com.firefly.utils.TurnipUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -13,14 +15,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class TurnipDownloader {
-    private static final String BASE_URL = "https://github.com/Vera-Firefly/TurnipDriver-CI/releases/download/";
-    private static final String VERSION_JSON_URL = BASE_URL + "100000/version.json";
-    private static final String DOWNLOAD_URL_TEMPLATE = BASE_URL + "%s/%s.zip";
+    private static final String BASE_URL = "https://github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
+    private static final String FALLBACK_BASE_URL = "https://github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
+    private static final String VERSION_JSON_URL = BASE_URL + "/100000/version.json";
+    private static final String DOWNLOAD_URL_TEMPLATE = "%s/%s/%s.zip";
 
     private static File dir;
-    private static final Map<String, String> versionMap = new HashMap<>();
+    private static final Map<String, String> versionName = new HashMap<>();
+    private static final Map<String, String> turnipName = new HashMap<>();
 
     private static void initDownloadDir(Context context) {
         if (dir == null) {
@@ -63,12 +69,15 @@ public class TurnipDownloader {
             JSONArray versions = jsonObject.getJSONArray("versions");
 
             Set<String> versionSet = new HashSet<>();
-            versionMap.clear();
+            versionName.clear();
+            turnipName.clear();
             for (int i = 0; i < versions.length(); i++) {
                 JSONObject versionObject = versions.getJSONObject(i);
                 String version = versionObject.getString("version");
                 String tag = versionObject.getString("tag");
-                versionMap.put(version, tag);
+                String fileName = versionObject.getString("fileName");
+                versionName.put(version, tag);
+                turnipName.put(tag, fileName);
                 versionSet.add(version);
             }
 
@@ -89,11 +98,26 @@ public class TurnipDownloader {
     public static boolean downloadTurnipFile(Context context, String version) {
         initDownloadDir(context);
 
-        try {
-            String tag = versionMap.get(version);
-            if (tag == null) return false;
+        String tag = versionName.get(version);
+        if (tag == null) return false;
 
-            String fileUrl = String.format(DOWNLOAD_URL_TEMPLATE, tag, version);
+        String[] baseUrls = {BASE_URL, FALLBACK_BASE_URL};
+        String fileUrl = null;
+
+        for (String baseUrl : baseUrls) {
+            String tempUrl = String.format(DOWNLOAD_URL_TEMPLATE, baseUrl, tag, version);
+            if (checkUrlAvailability(tempUrl)) {
+                fileUrl = tempUrl;
+                break;
+            }
+        }
+
+        if (fileUrl == null) {
+            System.err.println("No available URL for downloading the file.");
+            return false;
+        }
+
+        try {
             URL url = new URL(fileUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -110,6 +134,18 @@ public class TurnipDownloader {
                     }
                 }
 
+                File extractDir = new File(dir, version);
+                boolean success = unzipFile(targetFile, extractDir);
+                if (!success) {
+                    System.err.println("Failed to unzip file: " + targetFile.getAbsolutePath());
+                    return false;
+                }
+
+                boolean deleted = targetFile.delete();
+                if (!deleted) {
+                    System.err.println("Failed to delete zip file: " + targetFile.getAbsolutePath());
+                }
+
                 return true;
             }
         } catch (Exception e) {
@@ -117,4 +153,84 @@ public class TurnipDownloader {
         }
         return false;
     }
+
+    private static boolean checkUrlAvailability(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+            return (responseCode >= 200 && responseCode < 400);
+        } catch (Exception e) {
+            System.err.println("URL availability check failed: " + urlString);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean unzipFile(File zipFile, File targetDir) {
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            System.err.println("Failed to create target directory: " + targetDir.getAbsolutePath());
+            return false;
+        }
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
+            ZipEntry entry;
+            byte[] buffer = new byte[4096];
+
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                File outFile = new File(targetDir, entry.getName());
+
+                if (entry.isDirectory()) {
+                    if (!outFile.exists() && !outFile.mkdirs()) {
+                        System.err.println("Failed to create directory: " + outFile.getAbsolutePath());
+                        return false;
+                    }
+                } else {
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
+                        int len;
+                        while ((len = zipInputStream.read(buffer)) > 0) {
+                            fileOutputStream.write(buffer, 0, len);
+                        }
+                    }
+                }
+
+                zipInputStream.closeEntry();
+            }
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean saveTurnipFile(Context context, String version) {
+        String tag = versionName.get(version);
+        if (tag == null) return false;
+
+        String fileName = turnipName.get(tag);
+        if (fileName == null) return false;
+
+        File turnipDir = new File(dir, version);
+
+        boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(context, turnipDir, fileName);
+
+        deleteDirectory(turnipDir);
+
+        return success;
+    }
+
+    private static void deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            for (File file : dir.listFiles()) {
+                deleteDirectory(file);
+            }
+        }
+        dir.delete();
+    }
+
 }

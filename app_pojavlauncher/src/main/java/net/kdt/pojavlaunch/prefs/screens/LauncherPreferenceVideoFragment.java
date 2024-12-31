@@ -22,6 +22,7 @@ import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 
+import com.firefly.feature.TurnipDownloader;
 import com.firefly.utils.MesaUtils;
 import com.firefly.utils.PGWTools;
 import com.firefly.utils.TurnipUtils;
@@ -488,6 +489,67 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 } else {
                     AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
                             .setMessage(R.string.preference_rendererexp_mesa_download_fail)
+                            .create();
+                    alertDialog1.show();
+                }
+            });
+        });
+    }
+
+    private void loadTurnipList() {
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setMessage("正在加载Turnip驱动列表")
+                .show();
+        PojavApplication.sExecutorService.execute(() -> {
+            Set<String> list = TurnipDownloader.getTurnipList(requireContext());
+            requireActivity().runOnUiThread(() -> {
+                dialog.dismiss();
+
+                if (list == null) {
+                    AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
+                            .setMessage("列表获取失败")
+                            .create();
+                    alertDialog1.show();
+                } else {
+                    final String[] items = new String[list.size()];
+                    list.toArray(items);
+                    AlertDialog alertDialog2 = new AlertDialog.Builder(requireActivity())
+                            .setTitle(R.string.preference_rendererexp_mesa_select_download)
+                            .setItems(items, (dialogInterface, i) -> {
+                                if (i < 0 || i >= items.length)
+                                    return;
+                                dialogInterface.dismiss();
+                                downloadTurnip(items[i]);
+                            })
+                            .create();
+                    alertDialog2.show();
+                }
+            });
+        });
+    }
+
+    private void downloadTurnip(String version) {
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setMessage("正在下载")
+                .setCancelable(false)
+                .show();
+        PojavApplication.sExecutorService.execute(() -> {
+            boolean data = TurnipDownloader.downloadTurnipFile(requireContext(), version);
+            requireActivity().runOnUiThread(() -> {
+                dialog.dismiss();
+                if (data) {
+                    boolean success = TurnipDownloader.saveTurnipFile(requireContext(), version);
+                    if (success) {
+                        Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT)
+                                .show();
+                        setListPreference(requirePreference("chooseTurnipDriver", ChooseTurnipListPref.class), "chooseTurnipDriver");
+                    } else {
+                        Toast.makeText(requireContext(), "保存失败", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                } else {
+                    AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
+                            .setMessage("下载失败")
                             .create();
                     alertDialog1.show();
                 }
