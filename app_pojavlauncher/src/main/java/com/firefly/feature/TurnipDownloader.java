@@ -215,13 +215,33 @@ public class TurnipDownloader {
         String fileName = turnipName.get(tag);
         if (fileName == null) return false;
 
-        File turnipDir = new File(dir, version);
+        File sourceFile = new File(turnipDir, fileName);
+        boolean success = copyFileToTurnipDir(sourceFile, version);
 
-        boolean success = TurnipUtils.INSTANCE.saveTurnipDriver(context, turnipDir, fileName);
-
-        deleteDirectory(turnipDir);
+        deleteDirectory(sourceFile);
 
         return success;
+    }
+
+    private boolean copyFileToTurnipDir(File sourceFile, String folderName) {
+        File targetDir = new File(TurnipUtils.INSTANCE.getTurnipDir(), folderName);
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            return false;
+        }
+
+        File targetFile = new File(targetDir, "libvulkan_freedreno.so");
+        try (InputStream inputStream = new FileInputStream(sourceFile);
+             OutputStream outputStream = new FileOutputStream(targetFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private static void deleteDirectory(File dir) {
