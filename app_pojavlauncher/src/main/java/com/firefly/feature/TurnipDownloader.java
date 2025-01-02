@@ -19,8 +19,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class TurnipDownloader {
-    private static final String BASE_URL = "https://github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
-    private static final String FALLBACK_BASE_URL = "https://github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
+    private static final String DLS = null;
+    private static final String BASE_URL = DLS + "github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
+    private static final String FALLBACK_BASE_URL = DLS + "github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
     private static final String VERSION_JSON_URL = BASE_URL + "/100000/version.json";
     private static final String DOWNLOAD_URL_TEMPLATE = "%s/%s/%s.zip";
 
@@ -37,9 +38,10 @@ public class TurnipDownloader {
         }
     }
 
-    public static Set<String> getTurnipList(Context context) {
+    public static Set<String> getTurnipList(Context context, int dls) {
         File tempFile = null;
         initDownloadDir(context);
+        DLS = (dls == 1 ? "https://" : "https://mirror.ghproxy.com/");
 
         try {
             tempFile = new File(dir, "version.json");
