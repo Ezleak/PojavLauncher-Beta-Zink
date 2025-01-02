@@ -20,8 +20,8 @@ import java.util.zip.ZipInputStream;
 
 public class TurnipDownloader {
     private static String DLS = null;
-    private static volatile String BASE_URL = DLS + "github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
-    private static volatile String FALLBACK_BASE_URL = DLS + "github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
+    private static final String BASE_URL = "github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
+    private static final String FALLBACK_BASE_URL = "github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
     private static final String VERSION_JSON_URL = BASE_URL + "/100000/version.json";
     private static final String DOWNLOAD_URL_TEMPLATE = "%s/%s/%s.zip";
 
@@ -46,7 +46,7 @@ public class TurnipDownloader {
         try {
             tempFile = new File(dir, "version.json");
 
-            URL url = new URL(VERSION_JSON_URL);
+            URL url = new URL(DLS + VERSION_JSON_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
@@ -103,7 +103,7 @@ public class TurnipDownloader {
         String tag = versionName.get(version);
         if (tag == null) return false;
 
-        String[] baseUrls = {BASE_URL, FALLBACK_BASE_URL};
+        String[] baseUrls = {DLS + BASE_URL, DLS + FALLBACK_BASE_URL};
         String fileUrl = null;
 
         for (String baseUrl : baseUrls) {
