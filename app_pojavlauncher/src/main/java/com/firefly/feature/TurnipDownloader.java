@@ -19,7 +19,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class TurnipDownloader {
-    private static final String DLS = null;
+    private static String DLS = null;
     private static final String BASE_URL = DLS + "github.com/Vera-Firefly/TurnipDriver-CI/releases/download";
     private static final String FALLBACK_BASE_URL = DLS + "github.com/K11MCH1/AdrenoToolsDrivers/releases/download";
     private static final String VERSION_JSON_URL = BASE_URL + "/100000/version.json";

@@ -500,7 +500,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void isDownloadTurnip() {
         new CustomDialog.Builder(requireContext())
-            .setTitle(context.getString(R.string.pgw_settings_updatelauncher_source))
+            .setTitle(getString(R.string.pgw_settings_updatelauncher_source))
             .setCancelable(false)
             .setItems(new String[]{"GitHub", "GHPROXY"}, selectedSource -> {
                 int dls = selectedSource.equals("GitHub") ? 1 : 2;
