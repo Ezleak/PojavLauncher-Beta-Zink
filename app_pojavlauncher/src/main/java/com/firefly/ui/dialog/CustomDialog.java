@@ -54,14 +54,14 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         if (title != null && !title.isEmpty()) {
             titleTextView.setText(title);
             titleTextView.setGravity(Gravity.CENTER);
-            titleTextView.setTextSize(20);
+            titleTextView.setTextSize(26);
             mainLayout.addView(titleTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
         }
 
         if (message != null && !message.isEmpty()) {
             messageTextView.setText(message);
             messageTextView.setGravity(Gravity.START);
-            titleTextView.setTextSize(16);
+            titleTextView.setTextSize(22);
             mainLayout.addView(messageTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
         }
 
@@ -77,7 +77,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         }
 
         if (items != null && items.length > 0) {
-            mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+            mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f));
         }
 
         LayoutInflater inflater = LayoutInflater.from(context);
