@@ -57,10 +57,6 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             titleTextView.setGravity(Gravity.CENTER);
             titleTextView.setTextSize(26);
             mainLayout.addView(titleTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-            titleTextView.post(() -> {
-                titleHeight = titleTextView.getHeight();
-                adjustHeights(scrollView, scrollmessage, listView, items);
-            });
         }
 
         if (message != null && !message.isEmpty()) {
@@ -73,7 +69,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         if (scrollmessage != null && !scrollmessage.isEmpty()) {
             scrollMessageTextView.setText(scrollmessage);
             scrollView.addView(scrollMessageTextView);
-            mainLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
+            mainLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
         }
 
         if (customView != null) {
@@ -82,7 +78,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         }
 
         if (items != null && items.length > 0) {
-            mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
+            mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
         }
 
         LayoutInflater inflater = LayoutInflater.from(context);
