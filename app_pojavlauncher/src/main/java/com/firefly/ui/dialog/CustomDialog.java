@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.ScrollView;
@@ -39,7 +40,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        LinearLayout mainLayout = new LinearLayout(getContext());
+        LinearLayout mainLayout = new LinearLayout(context);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         mainLayout.setPadding(50, 20, 50, 20);
 
