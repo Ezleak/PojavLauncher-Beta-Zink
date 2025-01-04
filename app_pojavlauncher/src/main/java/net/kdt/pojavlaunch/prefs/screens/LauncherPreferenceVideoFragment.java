@@ -500,7 +500,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void isDownloadTurnip() {
         new CustomDialog.Builder(requireContext())
-            .setTitle(getString(R.string.pgw_settings_updatelauncher_source))
+            .setTitle(getString(R.string.pgw_settings_choose_download_source))
             .setCancelable(false)
             .setItems(new String[]{"GitHub", "GHPROXY"}, selectedSource -> {
                 int dls = selectedSource.equals("GitHub") ? 1 : 2;
@@ -512,43 +512,47 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
     }
 
     private void loadTurnipList(int dls) {
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setMessage(R.string.pgw_settings_ctu_dl_load)
+        CustomDialog dialog = new CustomDialog.Builder(requireContext())
+                .setMessage(getString(R.string.pgw_settings_ctu_dl_load))
                 .setCancelable(false)
-                .show();
+                .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+                .build();
+        dialog.show();
         PojavApplication.sExecutorService.execute(() -> {
             Set<String> list = TurnipDownloader.getTurnipList(requireContext(), dls);
             requireActivity().runOnUiThread(() -> {
                 dialog.dismiss();
 
                 if (list == null) {
-                    AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
-                            .setMessage(R.string.pgw_settings_ctu_dl_loadfail)
-                            .create();
-                    alertDialog1.show();
+                    CustomDialog Dialog1 = new CustomDialog.Builder(requireActivity())
+                            .setMessage(getString(R.string.pgw_settings_ctu_dl_loadfail))
+                            .setConfirmListener(R.string.alertdialog_done, customView -> true)
+                            .build();
+                    Dialog1.show();
                 } else {
                     final String[] items = new String[list.size()];
                     list.toArray(items);
-                    AlertDialog alertDialog2 = new AlertDialog.Builder(requireActivity())
-                            .setTitle(R.string.pgw_settings_ctu_dl_ms)
-                            .setItems(items, (dialogInterface, i) -> {
-                                if (i < 0 || i >= items.length)
+                    CustomDialog Dialog2 = new CustomDialog.Builder(requireActivity())
+                            .setTitle(getString(R.string.pgw_settings_ctu_dl_ms))
+                            .setItems(items, (item, i) -> {
+                                if (i == null || i < 0 || i >= items.length)
                                     return;
-                                dialogInterface.dismiss();
-                                downloadTurnip(items[i]);
+                                downloadTurnip(item[i]);
                             })
-                            .create();
-                    alertDialog2.show();
+                            .build();
+                    Dialog2.show();
                 }
             });
         });
     }
 
     private void downloadTurnip(String version) {
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setMessage(R.string.pgw_settings_ctu_dl_downloading)
+        CustomDialog dialog = new CustomDialog.Builder(requireContext())
+                .setMessage(getString(R.string.pgw_settings_ctu_dl_downloading))
                 .setCancelable(false)
-                .show();
+                .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+                .build();
+        dialog.show();
         PojavApplication.sExecutorService.execute(() -> {
             boolean data = TurnipDownloader.downloadTurnipFile(requireContext(), version);
             requireActivity().runOnUiThread(() -> {
@@ -564,10 +568,11 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                                 .show();
                     }
                 } else {
-                    AlertDialog alertDialog1 = new AlertDialog.Builder(requireActivity())
-                            .setMessage(R.string.pgw_settings_ctu_dl_failed)
-                            .create();
-                    alertDialog1.show();
+                    CustomDialog Dialog1 = new AlertDialog.Builder(requireActivity())
+                            .setMessage(getString(R.string.pgw_settings_ctu_dl_failed))
+                            .setConfirmListener(R.string.alertdialog_done, customView -> true)
+                            .build();
+                    Dialog1.show();
                 }
             });
         });

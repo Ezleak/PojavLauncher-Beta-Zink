@@ -46,7 +46,8 @@ public class TurnipDownloader {
         try {
             tempFile = new File(dir, "version.json");
 
-            URL url = new URL(DLS + VERSION_JSON_URL);
+            String versionUrl = DLS + VERSION_JSON_URL;
+            URL url = new URL(versionUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
@@ -103,11 +104,13 @@ public class TurnipDownloader {
         String tag = versionName.get(version);
         if (tag == null) return false;
 
-        String[] baseUrls = {DLS + BASE_URL, DLS + FALLBACK_BASE_URL};
+        String baseUrl = DLS + BASE_URL;
+        String fallbackBaseUrl = DLS + FALLBACK_BASE_URL;
+        String[] baseUrls = {baseUrl, fallbackBaseUrl};
         String fileUrl = null;
 
-        for (String baseUrl : baseUrls) {
-            String tempUrl = String.format(DOWNLOAD_URL_TEMPLATE, baseUrl, tag, version);
+        for (String testUrl : baseUrls) {
+            String tempUrl = String.format(DOWNLOAD_URL_TEMPLATE, testUrl, tag, version);
             if (checkUrlAvailability(tempUrl)) {
                 fileUrl = tempUrl;
                 break;

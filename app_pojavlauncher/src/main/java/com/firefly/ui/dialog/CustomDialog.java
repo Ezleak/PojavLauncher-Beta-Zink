@@ -139,7 +139,8 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, items);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener((parent, view1, position, id) -> {
-                itemClickListener.onItemClick(items[position]);
+                String item = items[position];
+                itemClickListener.onItemClick(item, position);
                 dialog.dismiss();
             });
         }
@@ -147,6 +148,12 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
 
     public void show() {
         dialog.show();
+    }
+
+    public void dismiss() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
     @Override
@@ -167,7 +174,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
     }
 
     public interface OnItemClickListener {
-        void onItemClick(String item);
+        void onItemClick(String item, @Nullable Integer index);
     }
 
     public static class Builder {
