@@ -502,7 +502,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         new CustomDialog.Builder(requireContext())
             .setTitle(getString(R.string.pgw_settings_choose_download_source))
             .setCancelable(false)
-            .setItems(new String[]{"GitHub", "GHPROXY"}, selectedSource -> {
+            .setItems(new String[]{"GitHub", "GHPROXY"}, (selectedSource, i) -> {
                 int dls = selectedSource.equals("GitHub") ? 1 : 2;
                 loadTurnipList(dls);
             })
@@ -537,7 +537,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                             .setItems(items, (item, i) -> {
                                 if (i == null || i < 0 || i >= items.length)
                                     return;
-                                downloadTurnip(item[i]);
+                                downloadTurnip(items[i]);
                             })
                             .build();
                     Dialog2.show();
@@ -568,7 +568,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                                 .show();
                     }
                 } else {
-                    CustomDialog Dialog1 = new AlertDialog.Builder(requireActivity())
+                    CustomDialog Dialog1 = new CustomDialog.Builder(requireActivity())
                             .setMessage(getString(R.string.pgw_settings_ctu_dl_failed))
                             .setConfirmListener(R.string.alertdialog_done, customView -> true)
                             .build();
