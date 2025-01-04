@@ -36,50 +36,64 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         this.itemClickListener = itemClickListener;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        FrameLayout rootLayout = new FrameLayout(context);
+        rootLayout.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+
+        TextView titleTextView = new TextView(context);
+        TextView messageTextView = new TextView(context);
+        ScrollView scrollView = new ScrollView(context);
+        TextView scrollMessageTextView = new TextView(context);
+        FrameLayout customContainer = new FrameLayout(context);
+        ListView listView = new ListView(context);
+
+        if (title != null && !title.isEmpty()) {
+            titleTextView.setText(title);
+            titleTextView.setGravity(Gravity.CENTER);
+            titleTextView.setTextSize(18);
+            rootLayout.addView(titleTextView);
+        }
+
+        if (message != null && !message.isEmpty()) {
+            messageTextView.setText(message);
+            messageTextView.setGravity(Gravity.START);
+            titleTextView.setTextSize(14);
+            rootLayout.addView(messageTextView);
+        }
+
+        if (scrollmessage != null && !scrollmessage.isEmpty()) {
+            scrollMessageTextView.setText(scrollmessage);
+            scrollView.addView(scrollMessageTextView);
+            rootLayout.addView(scrollView);
+        }
+
+        if (customView != null) {
+            customContainer.addView(customView);
+            rootLayout.addView(customContainer);
+        }
+
+        if (items != null && items.length > 0) {
+            rootLayout.addView(listView);
+        }
+
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.dialog_custom_layout, null);
 
-        TextView titleTextView = view.findViewById(R.id.custom_dialog_title);
-        TextView messageTextView = view.findViewById(R.id.custom_dialog_message);
-        TextView scrollmessageTextView = view.findViewById(R.id.custom_dialog_scroll_message);
-        ScrollView customScrollView = view.findViewById(R.id.custom_scroll_view);
         Button button1 = view.findViewById(R.id.custom_dialog_button_1);
         Button button2 = view.findViewById(R.id.custom_dialog_button_2);
         Button button3 = view.findViewById(R.id.custom_dialog_button_3);
         Button button4 = view.findViewById(R.id.custom_dialog_button_4);
         Button confirmButton = view.findViewById(R.id.custom_dialog_confirm_button);
         Button cancelButton = view.findViewById(R.id.custom_dialog_cancel_button);
-        FrameLayout customContainer = view.findViewById(R.id.custom_view_container);
-        ListView listView = view.findViewById(R.id.custom_dialog_list_view);
 
-        if (title != null && !title.isEmpty()) {
-            titleTextView.setText(title);
-            titleTextView.setVisibility(View.VISIBLE);
-        }
-
-        if (message != null && !message.isEmpty()) {
-            messageTextView.setText(message);
-            messageTextView.setVisibility(View.VISIBLE);
-        }
-
-        if (scrollmessage != null && !scrollmessage.isEmpty()) {
-            scrollmessageTextView.setText(scrollmessage);
-            scrollmessageTextView.setVisibility(View.VISIBLE);
-            customScrollView.setVisibility(View.VISIBLE);
-        }
-
-        if (customView != null && customContainer != null) {
-            customContainer.addView(customView);
-            customContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (items != null && items.length > 0) {
-            listView.setVisibility(View.VISIBLE);
-        }
+        rootLayout.addView(view);
 
         if (confirmButtonText != null) confirmButton.setText(confirmButtonText);
 
-        builder.setView(view);
+        builder.setView(rootLayout);
         dialog = builder.create();
 
         if (draggable) dialog.setOnShowListener(dialogInterface -> DraggableDialog.initDialog(this));
