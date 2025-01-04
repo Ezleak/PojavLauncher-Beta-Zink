@@ -25,6 +25,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
     private final AlertDialog dialog;
     private final String[] items;
     private final OnItemClickListener itemClickListener;
+    private int titleHeight;
 
     private CustomDialog(Context context, String title, String message, String scrollmessage,
                          View customView, String confirmButtonText, String cancelButtonText,
@@ -56,6 +57,10 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             titleTextView.setGravity(Gravity.CENTER);
             titleTextView.setTextSize(26);
             mainLayout.addView(titleTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+            titleTextView.post(() -> {
+                titleHeight = titleTextView.getHeight();
+                adjustHeights(scrollView, scrollmessage, listView, items);
+            });
         }
 
         if (message != null && !message.isEmpty()) {
@@ -159,6 +164,24 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
                 String item = items[position];
                 itemClickListener.onItemClick(item, position);
                 dialog.dismiss();
+            });
+        }
+    }
+
+    private void adjustHeights(ScrollView scrollView, String scrollmessage, ListView listView, String[] items) {
+        if (scrollmessage != null && !scrollmessage.isEmpty()) {
+            scrollView.post(() -> {
+                int scrollHeight = Math.min(scrollView.getHeight(), titleHeight);
+                scrollView.getLayoutParams().height = scrollHeight;
+                scrollView.requestLayout();
+            });
+        }
+
+        if (items != null && items.length > 0) {
+            listView.post(() -> {
+                int listHeight = Math.min(listView.getHeight(), titleHeight);
+                listView.getLayoutParams().height = listHeight;
+                listView.requestLayout();
             });
         }
     }
