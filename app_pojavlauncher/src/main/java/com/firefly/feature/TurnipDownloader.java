@@ -29,7 +29,7 @@ public class TurnipDownloader {
     private static final Map<String, String> versionName = new HashMap<>();
     private static final Map<String, String> turnipName = new HashMap<>();
 
-    private volatile boolean isCancelled = false;
+    private static volatile boolean isCancelled = false;
 
     private static void initDownloadDir(Context context) {
         if (dir == null) {
