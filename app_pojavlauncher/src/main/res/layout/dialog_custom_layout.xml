@@ -27,41 +27,51 @@
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/custom_dialog_title"
-        app:layout_constraintBottom_toTopOf="@id/custom_scroll_view" />
+        app:layout_constraintBottom_toTopOf="@id/message_scroll_view" />
 
     <ScrollView
-        android:id="@+id/custom_scroll_view"
+        android:id="@+id/message_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_50sdp"
         android:paddingBottom="10dp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/custom_dialog_message"
-        app:layout_constraintBottom_toTopOf="@id/custom_dialog_list_view">
+        app:layout_constraintBottom_toTopOf="@id/list_scroll_view">
 
         <TextView
-            android:id="@+id/custom_dialog_scroll_message"
+            android:id="@+id/custom_dialog_scroll_message_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:visibility="gone" />
     </ScrollView>
 
-    <ListView
-        android:id="@+id/custom_dialog_list_view"
+    <ScrollView
+        android:id="@+id/list_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_50sdp"
+        android:paddingBottom="10dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/custom_scroll_view"
-        app:layout_constraintBottom_toTopOf="@id/custom_view_container" />
+        app:layout_constraintTop_toBottomOf="@id/message_scroll_view"
+        app:layout_constraintBottom_toTopOf="@id/custom_view_container">
+
+        <ListView
+            android:id="@+id/custom_dialog_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </ScrollView>
 
     <FrameLayout
         android:id="@+id/custom_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/custom_dialog_list_view"
+        app:layout_constraintTop_toBottomOf="@id/list_scroll_view"
         app:layout_constraintBottom_toTopOf="@id/custom_button"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
