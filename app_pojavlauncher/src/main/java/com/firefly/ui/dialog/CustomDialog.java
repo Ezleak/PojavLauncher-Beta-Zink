@@ -1,18 +1,12 @@
 package com.firefly.ui.dialog;
 
-import androidx.annotation.Nullable;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.ScrollView;
@@ -22,7 +16,8 @@ import com.movtery.ui.dialog.DraggableDialog;
 
 import net.kdt.pojavlaunch.R;
 
-public class CustomDialog extends Dialog implements DraggableDialog.DialogInitializationListener {
+public class CustomDialog implements DraggableDialog.DialogInitializationListener {
+    private final AlertDialog dialog;
     private final String[] items;
     private final OnItemClickListener itemClickListener;
 
@@ -34,11 +29,11 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
                          OnButtonClickListener button3Listener, OnButtonClickListener button4Listener,
                          String[] items, OnItemClickListener itemClickListener,
                          boolean cancelable, boolean draggable) {
-        super(context);
 
         this.items = items;
         this.itemClickListener = itemClickListener;
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.dialog_custom_layout, null);
 
@@ -82,16 +77,19 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
 
         if (confirmButtonText != null) confirmButton.setText(confirmButtonText);
 
-        setContentView(view);
+        builder.setView(view);
+        dialog = builder.create();
 
-        if (!cancelable) setCancelable(false);
+        if (draggable) dialog.setOnShowListener(dialogInterface -> DraggableDialog.initDialog(this));
+
+        if (!cancelable) dialog.setCancelable(false);
 
         if (button1Listener != null) {
             button1.setVisibility(View.VISIBLE);
             if (button1Text != null) button1.setText(button1Text);
             button1.setOnClickListener(v -> {
                 boolean shouldDismiss = button1Listener.onClick(customView);
-                if (shouldDismiss) dismiss();
+                if (shouldDismiss) dialog.dismiss();
             });
         }
 
@@ -100,7 +98,7 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
             if (button2Text != null) button2.setText(button2Text);
             button2.setOnClickListener(v -> {
                 boolean shouldDismiss = button2Listener.onClick(customView);
-                if (shouldDismiss) dismiss();
+                if (shouldDismiss) dialog.dismiss();
             });
         }
 
@@ -109,7 +107,7 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
             if (button3Text != null) button3.setText(button3Text);
             button3.setOnClickListener(v -> {
                 boolean shouldDismiss = button3Listener.onClick(customView);
-                if (shouldDismiss) dismiss();
+                if (shouldDismiss) dialog.dismiss();
             });
         }
 
@@ -118,7 +116,7 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
             if (button4Text != null) button4.setText(button4Text);
             button4.setOnClickListener(v -> {
                 boolean shouldDismiss = button4Listener.onClick(customView);
-                if (shouldDismiss) dismiss();
+                if (shouldDismiss) dialog.dismiss();
             });
         }
 
@@ -127,31 +125,33 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
             if (cancelButtonText != null) cancelButton.setText(cancelButtonText);
             cancelButton.setOnClickListener(v -> {
                 boolean shouldDismiss = cancelListener.onCancel(customView);
-                if (shouldDismiss) dismiss();
+                if (shouldDismiss) dialog.dismiss();
             });
         }
 
         confirmButton.setOnClickListener(v -> {
             boolean shouldDismiss = true;
             if (confirmListener != null) shouldDismiss = confirmListener.onConfirm(customView);
-            if (shouldDismiss) dismiss();
+            if (shouldDismiss) dialog.dismiss();
         });
 
         if (itemClickListener != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, items);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener((parent, view1, position, id) -> {
-                String item = items[position];
-                itemClickListener.onItemClick(item, position);
-                dismiss();
+                itemClickListener.onItemClick(items[position]);
+                dialog.dismiss();
             });
         }
-        DraggableDialog.initDialog(this);
+    }
+
+    public void show() {
+        dialog.show();
     }
 
     @Override
     public Window onInit() {
-        return getWindow();
+        return dialog.getWindow();
     }
 
     public interface OnButtonClickListener {
@@ -167,7 +167,7 @@ public class CustomDialog extends Dialog implements DraggableDialog.DialogInitia
     }
 
     public interface OnItemClickListener {
-        void onItemClick(String item, @Nullable Integer index);
+        void onItemClick(String item);
     }
 
     public static class Builder {
