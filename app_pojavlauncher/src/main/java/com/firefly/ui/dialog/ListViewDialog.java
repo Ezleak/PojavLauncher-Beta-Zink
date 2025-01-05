@@ -269,7 +269,7 @@ public class ListViewDialog implements DraggableDialog.DialogInitializationListe
 
         public Builder setConfirmListener(int buttonText, OnButtonClickListener listener) {
             this.confirmButtonText = context.getString(buttonText);
-            this.confirmListener = confirmListener;
+            this.confirmListener = listener;
             return this;
         }
 
