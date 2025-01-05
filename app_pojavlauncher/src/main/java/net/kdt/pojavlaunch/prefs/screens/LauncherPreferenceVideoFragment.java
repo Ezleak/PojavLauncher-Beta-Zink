@@ -515,7 +515,10 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         CustomDialog dialog = new CustomDialog.Builder(requireContext())
                 .setTitle(getString(R.string.pgw_settings_ctu_dl_load))
                 .setCancelable(false)
-                .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+                .setConfirmListener(R.string.alertdialog_cancel, customView -> {
+                    TurnipDownloader.cancelDownload(requireContext());
+                    return true;
+                })
                 .build();
         dialog.show();
         PojavApplication.sExecutorService.execute(() -> {
@@ -551,7 +554,10 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         CustomDialog dialog = new CustomDialog.Builder(requireContext())
                 .setMessage(getString(R.string.pgw_settings_ctu_dl_downloading))
                 .setCancelable(false)
-                .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+                .setConfirmListener(R.string.alertdialog_cancel, customView -> {
+                    TurnipDownloader.cancelDownload(requireContext());
+                    return true;
+                })
                 .build();
         dialog.show();
         PojavApplication.sExecutorService.execute(() -> {

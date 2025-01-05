@@ -29,6 +29,8 @@ public class TurnipDownloader {
     private static final Map<String, String> versionName = new HashMap<>();
     private static final Map<String, String> turnipName = new HashMap<>();
 
+    private volatile boolean isCancelled = false;
+
     private static void initDownloadDir(Context context) {
         if (dir == null) {
             dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "Turnip");
@@ -38,7 +40,12 @@ public class TurnipDownloader {
         }
     }
 
+    public static void cancelDownload(Context context) {
+        isCancelled = true;
+    }
+
     public static Set<String> getTurnipList(Context context, int dls) {
+        isCancelled = false;
         File tempFile = null;
         initDownloadDir(context);
 
@@ -75,6 +82,11 @@ public class TurnipDownloader {
                 byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    if (isCancelled) {
+                        fileOutputStream.close();
+                        tempFile.delete();
+                        return null;
+                    }
                     fileOutputStream.write(buffer, 0, bytesRead);
                 }
             }
@@ -154,6 +166,11 @@ public class TurnipDownloader {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        if (isCancelled) {
+                            fileOutputStream.close();
+                            targetFile.delete();
+                            return false;
+                        }
                         fileOutputStream.write(buffer, 0, bytesRead);
                     }
                 }
