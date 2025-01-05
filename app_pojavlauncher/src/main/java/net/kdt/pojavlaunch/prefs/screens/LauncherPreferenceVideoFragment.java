@@ -498,14 +498,13 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         });
     }
 
+
     private void isDownloadTurnip() {
+        String[] sources = {"Auto", "GitHub", "GHPROXY"};
         new CustomDialog.Builder(requireContext())
             .setTitle(getString(R.string.pgw_settings_choose_download_source))
             .setCancelable(false)
-            .setItems(new String[]{"GitHub", "GHPROXY"}, (selectedSource, i) -> {
-                int dls = selectedSource.equals("GitHub") ? 1 : 2;
-                loadTurnipList(dls);
-            })
+            .setItems(sources, (s, i) -> loadTurnipList(i))
             .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
             .build()
             .show();
@@ -513,7 +512,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void loadTurnipList(int dls) {
         CustomDialog dialog = new CustomDialog.Builder(requireContext())
-                .setMessage(getString(R.string.pgw_settings_ctu_dl_load))
+                .setTitle(getString(R.string.pgw_settings_ctu_dl_load))
                 .setCancelable(false)
                 .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
                 .build();
@@ -525,7 +524,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
                 if (list == null) {
                     CustomDialog Dialog1 = new CustomDialog.Builder(requireActivity())
-                            .setMessage(getString(R.string.pgw_settings_ctu_dl_loadfail))
+                            .setTitle(getString(R.string.pgw_settings_ctu_dl_loadfail))
                             .setConfirmListener(R.string.alertdialog_done, customView -> true)
                             .build();
                     Dialog1.show();
@@ -539,6 +538,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                                     return;
                                 downloadTurnip(items[i]);
                             })
+                            .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
                             .build();
                     Dialog2.show();
                 }

@@ -3,6 +3,7 @@ package com.firefly.ui.dialog;
 import androidx.annotation.Nullable;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.Gravity;
@@ -21,11 +22,9 @@ import com.movtery.ui.dialog.DraggableDialog;
 
 import net.kdt.pojavlaunch.R;
 
-public class CustomDialog implements DraggableDialog.DialogInitializationListener {
-    private final AlertDialog dialog;
+public class CustomDialog extends Dialog implements DraggableDialog.DialogInitializationListener {
     private final String[] items;
     private final OnItemClickListener itemClickListener;
-    private int titleHeight;
 
     private CustomDialog(Context context, String title, String message, String scrollmessage,
                          View customView, String confirmButtonText, String cancelButtonText,
@@ -35,79 +34,64 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
                          OnButtonClickListener button3Listener, OnButtonClickListener button4Listener,
                          String[] items, OnItemClickListener itemClickListener,
                          boolean cancelable, boolean draggable) {
+        super(context);
 
         this.items = items;
         this.itemClickListener = itemClickListener;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        LinearLayout mainLayout = new LinearLayout(context);
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        mainLayout.setPadding(50, 20, 50, 20);
-
-        TextView titleTextView = new TextView(context);
-        TextView messageTextView = new TextView(context);
-        ScrollView scrollView = new ScrollView(context);
-        TextView scrollMessageTextView = new TextView(context);
-        FrameLayout customContainer = new FrameLayout(context);
-        ListView listView = new ListView(context);
-
-        if (title != null && !title.isEmpty()) {
-            titleTextView.setText(title);
-            titleTextView.setGravity(Gravity.CENTER);
-            titleTextView.setTextSize(26);
-            mainLayout.addView(titleTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-        }
-
-        if (message != null && !message.isEmpty()) {
-            messageTextView.setText(message);
-            messageTextView.setGravity(Gravity.START);
-            titleTextView.setTextSize(22);
-            mainLayout.addView(messageTextView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-        }
-
-        if (scrollmessage != null && !scrollmessage.isEmpty()) {
-            scrollMessageTextView.setText(scrollmessage);
-            scrollView.addView(scrollMessageTextView);
-            mainLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
-        }
-
-        if (customView != null) {
-            customContainer.addView(customView);
-            mainLayout.addView(customContainer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-        }
-
-        if (items != null && items.length > 0) {
-            mainLayout.addView(listView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
-        }
-
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.dialog_custom_layout, null);
 
+        TextView titleTextView = view.findViewById(R.id.custom_dialog_title);
+        TextView messageTextView = view.findViewById(R.id.custom_dialog_message);
+        TextView scrollmessageTextView = view.findViewById(R.id.custom_dialog_scroll_message);
+        ScrollView customScrollView = view.findViewById(R.id.custom_scroll_view);
         Button button1 = view.findViewById(R.id.custom_dialog_button_1);
         Button button2 = view.findViewById(R.id.custom_dialog_button_2);
         Button button3 = view.findViewById(R.id.custom_dialog_button_3);
         Button button4 = view.findViewById(R.id.custom_dialog_button_4);
         Button confirmButton = view.findViewById(R.id.custom_dialog_confirm_button);
         Button cancelButton = view.findViewById(R.id.custom_dialog_cancel_button);
+        FrameLayout customContainer = view.findViewById(R.id.custom_view_container);
+        ListView listView = view.findViewById(R.id.custom_dialog_list_view);
 
-        mainLayout.addView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        if (title != null && !title.isEmpty()) {
+            titleTextView.setText(title);
+            titleTextView.setVisibility(View.VISIBLE);
+        }
+
+        if (message != null && !message.isEmpty()) {
+            messageTextView.setText(message);
+            messageTextView.setVisibility(View.VISIBLE);
+        }
+
+        if (scrollmessage != null && !scrollmessage.isEmpty()) {
+            scrollmessageTextView.setText(scrollmessage);
+            scrollmessageTextView.setVisibility(View.VISIBLE);
+            customScrollView.setVisibility(View.VISIBLE);
+        }
+
+        if (customView != null && customContainer != null) {
+            customContainer.addView(customView);
+            customContainer.setVisibility(View.VISIBLE);
+        }
+
+        if (items != null && items.length > 0) {
+            listView.setVisibility(View.VISIBLE);
+        }
 
         if (confirmButtonText != null) confirmButton.setText(confirmButtonText);
 
-        builder.setView(mainLayout);
-        dialog = builder.create();
+        setContentView(view);
 
-        if (draggable) dialog.setOnShowListener(dialogInterface -> DraggableDialog.initDialog(this));
-
-        if (!cancelable) dialog.setCancelable(false);
+        if (!cancelable) setCancelable(false);
 
         if (button1Listener != null) {
             button1.setVisibility(View.VISIBLE);
             if (button1Text != null) button1.setText(button1Text);
             button1.setOnClickListener(v -> {
                 boolean shouldDismiss = button1Listener.onClick(customView);
-                if (shouldDismiss) dialog.dismiss();
+                if (shouldDismiss) dismiss();
             });
         }
 
@@ -116,7 +100,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             if (button2Text != null) button2.setText(button2Text);
             button2.setOnClickListener(v -> {
                 boolean shouldDismiss = button2Listener.onClick(customView);
-                if (shouldDismiss) dialog.dismiss();
+                if (shouldDismiss) dismiss();
             });
         }
 
@@ -125,7 +109,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             if (button3Text != null) button3.setText(button3Text);
             button3.setOnClickListener(v -> {
                 boolean shouldDismiss = button3Listener.onClick(customView);
-                if (shouldDismiss) dialog.dismiss();
+                if (shouldDismiss) dismiss();
             });
         }
 
@@ -134,7 +118,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             if (button4Text != null) button4.setText(button4Text);
             button4.setOnClickListener(v -> {
                 boolean shouldDismiss = button4Listener.onClick(customView);
-                if (shouldDismiss) dialog.dismiss();
+                if (shouldDismiss) dismiss();
             });
         }
 
@@ -143,14 +127,14 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             if (cancelButtonText != null) cancelButton.setText(cancelButtonText);
             cancelButton.setOnClickListener(v -> {
                 boolean shouldDismiss = cancelListener.onCancel(customView);
-                if (shouldDismiss) dialog.dismiss();
+                if (shouldDismiss) dismiss();
             });
         }
 
         confirmButton.setOnClickListener(v -> {
             boolean shouldDismiss = true;
             if (confirmListener != null) shouldDismiss = confirmListener.onConfirm(customView);
-            if (shouldDismiss) dialog.dismiss();
+            if (shouldDismiss) dismiss();
         });
 
         if (itemClickListener != null) {
@@ -159,42 +143,15 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
             listView.setOnItemClickListener((parent, view1, position, id) -> {
                 String item = items[position];
                 itemClickListener.onItemClick(item, position);
-                dialog.dismiss();
+                dismiss();
             });
         }
-    }
-
-    private void adjustHeights(ScrollView scrollView, String scrollmessage, ListView listView, String[] items) {
-        if (scrollmessage != null && !scrollmessage.isEmpty()) {
-            scrollView.post(() -> {
-                int scrollHeight = Math.min(scrollView.getHeight(), titleHeight);
-                scrollView.getLayoutParams().height = scrollHeight;
-                scrollView.requestLayout();
-            });
-        }
-
-        if (items != null && items.length > 0) {
-            listView.post(() -> {
-                int listHeight = Math.min(listView.getHeight(), titleHeight);
-                listView.getLayoutParams().height = listHeight;
-                listView.requestLayout();
-            });
-        }
-    }
-
-    public void show() {
-        dialog.show();
-    }
-
-    public void dismiss() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
-        }
+        DraggableDialog.initDialog(this);
     }
 
     @Override
     public Window onInit() {
-        return dialog.getWindow();
+        return getWindow();
     }
 
     public interface OnButtonClickListener {

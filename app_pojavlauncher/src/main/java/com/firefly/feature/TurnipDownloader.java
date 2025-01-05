@@ -41,12 +41,31 @@ public class TurnipDownloader {
     public static Set<String> getTurnipList(Context context, int dls) {
         File tempFile = null;
         initDownloadDir(context);
-        DLS = (dls == 1 ? "https://" : "https://mirror.ghproxy.com/");
+
+        String defaultUrl = "https://";
+        String ghproxyUrl = "https://mirror.ghproxy.com/";
+        String versionUrl = null;
+
+        if (dls != 0) {
+            DLS = (dls == 1 ? defaultUrl : ghproxyUrl);
+            versionUrl = DLS + VERSION_JSON_URL;
+        } else {
+            String[] baseUrls = {defaultUrl, ghproxyUrl};
+            String testLink = defaultUrl + VERSION_JSON_URL;
+
+            for (String testUrl : baseUrls) {
+                String tempUrl = testUrl + VERSION_JSON_URL;
+                if (checkUrlAvailability(tempUrl)) {
+                    versionUrl = tempUrl;
+                    DLS = tempUrl.equals(testLink) ? defaultUrl : ghproxyUrl;
+                    break;
+                }
+            }
+        }
 
         try {
             tempFile = new File(dir, "version.json");
 
-            String versionUrl = DLS + VERSION_JSON_URL;
             URL url = new URL(versionUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
