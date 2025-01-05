@@ -154,6 +154,12 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         dialog.show();
     }
 
+    public void dismiss() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
+
     @Override
     public Window onInit() {
         return dialog.getWindow();
