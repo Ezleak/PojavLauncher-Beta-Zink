@@ -27,6 +27,7 @@ import com.firefly.utils.MesaUtils;
 import com.firefly.utils.PGWTools;
 import com.firefly.utils.TurnipUtils;
 import com.firefly.ui.dialog.CustomDialog;
+import com.firefly.ui.dialog.ListViewDialog;
 import com.firefly.ui.prefs.ChooseMesaListPref;
 import com.firefly.ui.prefs.ChooseTurnipListPref;
 
@@ -501,11 +502,11 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void isDownloadTurnip() {
         String[] sources = {"Auto", "GitHub", "GHPROXY"};
-        new CustomDialog.Builder(requireContext())
-            .setTitle(getString(R.string.pgw_settings_choose_download_source))
+        new ListViewDialog.Builder(requireContext())
+            .setTitle(R.string.pgw_settings_choose_download_source)
             .setCancelable(false)
             .setItems(sources, (s, i) -> loadTurnipList(i))
-            .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+            .setCancelListener(R.string.alertdialog_cancel, v -> true)
             .build()
             .show();
     }
@@ -531,14 +532,14 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                 } else {
                     final String[] items = new String[list.size()];
                     list.toArray(items);
-                    CustomDialog Dialog2 = new CustomDialog.Builder(requireActivity())
-                            .setTitle(getString(R.string.pgw_settings_ctu_dl_ms))
+                    ListViewDialog Dialog2 = new ListViewDialog.Builder(requireActivity())
+                            .setTitle(R.string.pgw_settings_ctu_dl_ms)
                             .setItems(items, (item, i) -> {
                                 if (i == null || i < 0 || i >= items.length)
                                     return;
                                 downloadTurnip(items[i]);
                             })
-                            .setConfirmListener(R.string.alertdialog_cancel, customView -> true)
+                            .setCancelListener(R.string.alertdialog_cancel, v -> true)
                             .build();
                     Dialog2.show();
                 }

@@ -43,7 +43,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
         TextView messageTextView = view.findViewById(R.id.custom_dialog_message);
         TextView scrollmessageTextView = view.findViewById(R.id.custom_dialog_scroll_message_text);
         ScrollView messageScrollView = view.findViewById(R.id.message_scroll_view);
-        ScrollView listScrollView = view.findViewById(R.id.list_scroll_view);
+        // ScrollView listScrollView = view.findViewById(R.id.list_scroll_view);
         Button button1 = view.findViewById(R.id.custom_dialog_button_1);
         Button button2 = view.findViewById(R.id.custom_dialog_button_2);
         Button button3 = view.findViewById(R.id.custom_dialog_button_3);
@@ -76,7 +76,7 @@ public class CustomDialog implements DraggableDialog.DialogInitializationListene
 
         if (items != null && items.length > 0) {
             listView.setVisibility(View.VISIBLE);
-            listScrollView.setVisibility(View.VISIBLE);
+            // listScrollView.setVisibility(View.VISIBLE);
         }
 
         if (confirmButtonText != null) confirmButton.setText(confirmButtonText);
