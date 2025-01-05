@@ -163,6 +163,7 @@ public class ListViewDialog implements DraggableDialog.DialogInitializationListe
         }
 
         if (confirmListener != null) {
+            confirmButton.setOnClickListener(v -> {
                 boolean shouldDismiss = confirmListener.onClick(v);
                 if (shouldDismiss) dialog.dismiss();
             });
