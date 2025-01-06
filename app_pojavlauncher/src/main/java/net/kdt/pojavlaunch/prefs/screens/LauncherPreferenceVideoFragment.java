@@ -523,6 +523,8 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         dialog.show();
         PojavApplication.sExecutorService.execute(() -> {
             Set<String> list = TurnipDownloader.getTurnipList(requireContext(), dls);
+            boolean isCancelled = TurnipDownloader.onCancelled(requireContext());
+            if (isCancelled) return;
             requireActivity().runOnUiThread(() -> {
                 dialog.dismiss();
 
@@ -552,7 +554,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
 
     private void downloadTurnip(String version) {
         CustomDialog dialog = new CustomDialog.Builder(requireContext())
-                .setMessage(getString(R.string.pgw_settings_ctu_dl_downloading))
+                .setTitle(getString(R.string.pgw_settings_ctu_dl_downloading))
                 .setCancelable(false)
                 .setConfirmListener(R.string.alertdialog_cancel, customView -> {
                     TurnipDownloader.cancelDownload(requireContext());
@@ -562,6 +564,8 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
         dialog.show();
         PojavApplication.sExecutorService.execute(() -> {
             boolean data = TurnipDownloader.downloadTurnipFile(requireContext(), version);
+            boolean isCancelled = TurnipDownloader.onCancelled(requireContext());
+            if (isCancelled) return;
             requireActivity().runOnUiThread(() -> {
                 dialog.dismiss();
                 if (data) {
@@ -576,7 +580,7 @@ public class LauncherPreferenceVideoFragment extends LauncherPreferenceFragment 
                     }
                 } else {
                     CustomDialog Dialog1 = new CustomDialog.Builder(requireActivity())
-                            .setMessage(getString(R.string.pgw_settings_ctu_dl_failed))
+                            .setTitle(getString(R.string.pgw_settings_ctu_dl_failed))
                             .setConfirmListener(R.string.alertdialog_done, customView -> true)
                             .build();
                     Dialog1.show();
