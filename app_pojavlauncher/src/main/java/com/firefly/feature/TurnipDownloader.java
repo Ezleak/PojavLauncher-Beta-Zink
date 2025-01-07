@@ -265,7 +265,8 @@ public class TurnipDownloader {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
-            cleanup(sourceFile);
+            File sourceFiles = getDownloadSubDir(folderName);
+            cleanup(sourceFiles);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
