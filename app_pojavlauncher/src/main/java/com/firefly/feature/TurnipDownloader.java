@@ -122,7 +122,7 @@ public class TurnipDownloader {
         }
 
         File extractDir = getDownloadSubDir(version);
-        if (!unzipFile(zipFile, extractDir)) {
+        if (!PGWTools.unzipFile(zipFile, extractDir)) {
             System.err.println("Failed to extract the file: " + zipFile.getAbsolutePath());
             return false;
         }
