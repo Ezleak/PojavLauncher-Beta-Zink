@@ -64,6 +64,37 @@ public class TurnipDownloader {
         return parseVersionFile(versionFile);
     }
 
+    // Parse the version file and save it
+    private static List<String> parseVersionFile(File versionFile) {
+        List<String> turnipVersions = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(versionFile))) {
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+
+            JSONObject jsonObject = new JSONObject(jsonBuilder.toString());
+            JSONArray versionsArray = jsonObject.getJSONArray("versions");
+
+            for (int i = 0; i < versionsArray.length(); i++) {
+                JSONObject versionObject = versionsArray.getJSONObject(i);
+                String version = versionObject.getString("version");
+                String tag = versionObject.getString("tag");
+                String fileName = versionObject.getString("fileName");
+
+                versionNameMap.put(version, tag);
+                turnipNameMap.put(tag, fileName);
+
+                turnipVersions.add(version);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return turnipVersions;
+    }
+
     // Download and extract the specified version of Turnip
     public static boolean downloadTurnipFile(Context context, String version) {
         initDownloadDir(context);
