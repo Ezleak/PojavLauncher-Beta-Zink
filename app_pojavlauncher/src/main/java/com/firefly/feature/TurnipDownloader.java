@@ -144,6 +144,41 @@ public class TurnipDownloader {
         return copyFileToTurnipDir(sourceFile, version);
     }
 
+    // Resolve the URL to fetch the version.json file
+    private static String resolveVersionUrl(int sourceType) {
+        String[] sources = {
+            "https://",
+            "https://mirror.ghproxy.com/"
+        };
+        if (sourceType > 0 && sourceType <= sources.length) {
+            DLS = sources[sourceType - 1];
+            return DLS + BASE_URL + VERSION_JSON_PATH;
+        }
+        for (String source : sources) {
+            String testUrl = source + BASE_URL + VERSION_JSON_PATH;
+            if (checkUrlAvailability(testUrl)) {
+                DLS = source;
+                return testUrl;
+            }
+        }
+        return null;
+    }
+
+    // Resolve the download URL for the given version and tag
+    private static String resolveDownloadUrl(String tag, String version) {
+        String[] baseUrls = {
+            DLS + BASE_URL,
+            DLS + FALLBACK_BASE_URL
+        };
+        for (String baseUrl : baseUrls) {
+            String testUrl = String.format(DOWNLOAD_URL_TEMPLATE, baseUrl, tag, version);
+            if (checkUrlAvailability(testUrl)) {
+                return testUrl;
+            }
+        }
+        return null;
+    }
+
     // Generic file download method
     private static boolean downloadFile(String fileUrl, File targetFile) {
         try (InputStream inputStream = new URL(fileUrl).openStream();
@@ -210,6 +245,28 @@ public class TurnipDownloader {
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
             return connection.getResponseCode() >= 200 && connection.getResponseCode() < 400;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Copy file to the target directory
+    private static boolean copyFileToTurnipDir(File sourceFile, String folderName) {
+        File targetDir = new File(TurnipUtils.INSTANCE.getTurnipDir(), folderName);
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            return false;
+        }
+        File targetFile = new File(targetDir, "libvulkan_freedreno.so");
+        try (InputStream inputStream = new FileInputStream(sourceFile);
+             OutputStream outputStream = new FileOutputStream(targetFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            cleanup(sourceFile);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
