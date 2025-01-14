@@ -254,7 +254,7 @@ public class JREUtils {
         Map<String, String> envMap = new ArrayMap<>();
 
         if (LOCAL_RENDERER.startsWith("opengles2")) {
-            envMap.put("LIBGL_ES", "2");
+            envMap.put("LIBGL_ES", "3");
             envMap.put("LIBGL_MIPMAP", "3");
             envMap.put("LIBGL_NOERROR", "1");
             envMap.put("LIBGL_NOINTOVLHACK", "1");
@@ -264,6 +264,11 @@ public class JREUtils {
         if (LOCAL_RENDERER.equals("opengles3_ltw")) {
             envMap.put("LIBGL_ES", "3");
             envMap.put("POJAVEXEC_EGL", "libltw.so");
+        }
+
+        if (LOCAL_RENDERER.equals("opengles3_gl4esplus")) {
+            envMap.put("LIBGL_ES", "3");
+            envMap.put("POJAVEXEC_EGL", "libEGL_angle.so");
         }
 
         if (LOCAL_RENDERER.equals("opengles3_angle")) {
@@ -702,6 +707,9 @@ public class JREUtils {
                     break;
                 case "opengles3_ltw":
                     renderLibrary = "libltw.so";
+                    break;
+                case "opengles3_gl4esplus":
+                    renderLibrary = "libgl4es_plus.so";
                     break;
                 default:
                     Log.w("RENDER_LIBRARY", "No renderer selected, defaulting to opengles2");
