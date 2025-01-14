@@ -12,6 +12,7 @@
         <item name="8">@string/mcl_setting_renderer_panfrost</item>
         <item name="9">Angle</item>
         <item name="10">@string/mcl_setting_renderer_ltw</item>
+        <item name="11">@string/mcl_setting_renderer_gl4esplus</item>
     </string-array>
 
     <string-array name="renderer_values">
@@ -26,6 +27,7 @@
         <item>panfrost</item> <!-- Gallium Panfrost with Mali GPU -->
         <item>opengles3_angle</item> <!-- Angle with OpenGL ES 3 -->
         <item>opengles3_ltw</item> <!-- Unknown -->
+        <item>opengles3_gl4esplus</item> <!-- Unknown -->
     </string-array>
 
     <string-array name="menu_customcontrol">
