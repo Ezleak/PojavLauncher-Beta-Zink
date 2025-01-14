@@ -56,21 +56,22 @@ jobs:
           branch: main
           name: lwjgl
 
-      - name: Build Release ${{matrix.arch}} .apk
-        run: |
-          chmod +x gradlew
-          ./gradlew app_pojavlauncher:assemblerelease -Darch=${{matrix.arch}}
+      - name: Get LTW
+        uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
+        with:
+          github_token: ${{secrets.LTW_CLONER_SECRET}}
+          repo: PojavLauncherTeam/BigTinyWrapper
+          workflow: android.yml
+          workflow_conclusion: success
+          name: output-aar
+          path: app_pojavlauncher/libs
+          allow_forks: false
 
       - name: Build Debug ${{matrix.arch}} .apk
         run: |
           chmod +x gradlew
           ./gradlew app_pojavlauncher:assembleDebug -Darch=${{matrix.arch}}
-
-      - name: Upload Release
-        uses: actions/upload-artifact@v4
-        with:
-          name: PGW-release-${{matrix.arch}}
-          path: app_pojavlauncher/build/outputs/apk/release/*
 
       - name: Upload Debug
         uses: actions/upload-artifact@v4
@@ -82,7 +83,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        arch: [ "all", "arm", "arm64", "x86", "x86_64" ]
+        arch: [ "arm64" ]
       fail-fast: false
 
     env:
