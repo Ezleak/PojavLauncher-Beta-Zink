@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        arch: [ "all", "arm", "arm64", "x86", "x86_64" ]
+        arch: [ "arm64" ]
       fail-fast: false
 
     env:
@@ -27,7 +27,7 @@ jobs:
           java-version: '17'
 
       - name: Set IS_OFFICIAL if in the Creator Repository
-        if: github.repository_owner == 'Vera-Firefly'
+        if: github.repository_owner == 'Ezleak'
         run: echo "IS_OFFICIAL=true" >> $GITHUB_ENV
 
       - name: Get Jre
@@ -61,7 +61,7 @@ jobs:
           name: lwjgl
 
       - name: Build Release ${{matrix.arch}} .apk
-        if: github.repository_owner == 'Vera-Firefly' && github.ref_name == 'main_v3'
+        if: github.repository_owner == 'Ezleak' && github.ref_name == 'main_v3'
         run: |
           chmod +x gradlew
           ./gradlew app_pojavlauncher:assemblerelease -Darch=${{matrix.arch}}
@@ -72,7 +72,7 @@ jobs:
           ./gradlew app_pojavlauncher:assembleDebug -Darch=${{matrix.arch}}
 
       - name: Upload Release
-        if: github.repository_owner == 'Vera-Firefly' && github.ref_name == 'main_v3'
+        if: github.repository_owner == 'Ezleak' && github.ref_name == 'main_v3'
         uses: actions/upload-artifact@v4
         with:
           name: PGW-release-${{matrix.arch}}
