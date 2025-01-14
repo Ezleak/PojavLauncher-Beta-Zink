@@ -26,9 +26,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set IS_OFFICIAL if in the Creator Repository
-        run: echo "IS_OFFICIAL=true" >> $GITHUB_ENV
-
       - name: Get Jre
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -60,7 +57,6 @@ jobs:
           name: lwjgl
 
       - name: Build Release ${{matrix.arch}} .apk
-        github.ref_name == 'main_v3'
         run: |
           chmod +x gradlew
           ./gradlew app_pojavlauncher:assemblerelease -Darch=${{matrix.arch}}
@@ -71,7 +67,6 @@ jobs:
           ./gradlew app_pojavlauncher:assembleDebug -Darch=${{matrix.arch}}
 
       - name: Upload Release
-        github.ref_name == 'main_v3'
         uses: actions/upload-artifact@v4
         with:
           name: PGW-release-${{matrix.arch}}
